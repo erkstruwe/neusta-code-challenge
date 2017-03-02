@@ -1,0 +1,43 @@
+{
+  "name": "neusta-code-challenge",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "unit": "istanbul cover --include-all-sources --captureExceptions --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.json",
+    "test": "npm run lint && npm run unit",
+    "start": "node src/index.js",
+    "start:dev": "nodemon --watch src",
+    "preversion": "npm test",
+    "postversion": "git push origin master"
+  },
+  "engines": {
+    "node": "^6.9.5",
+    "npm": "^3.10.10"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": ""
+  },
+  "dependencies": {
+    "compression": "^1.6.2",
+    "express": "^4.15.0",
+    "helmet": "^3.4.1",
+    "lodash": "^4.17.4",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.5.3",
+    "nodemon": "^1.11.0"
+  }
+}
