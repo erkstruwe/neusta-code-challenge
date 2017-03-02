@@ -2,7 +2,7 @@ const express = require('express')
 const compression = require('compression')
 const helmet = require('helmet')
 
-const Person = require('./classes/Person')
+const personData = require('./classes/Person/Person.data')
 
 const router = require('./routers')
 const config = require('./config')
@@ -25,32 +25,7 @@ app.use((req, res, next) => {
 app.use(router)
 
 // test data
-app.locals.persons = [
-    new Person({
-        firstName: 'Frank',
-        lastName: 'Supper',
-        title: 'Dr.',
-        nameAddition: 'von',
-        ldap: 'fsupper',
-        room: 1111
-    }),
-    new Person({
-        firstName: 'Dennis',
-        lastName: 'Fischer',
-        title: 'Dr.',
-        nameAddition: 'von',
-        ldap: 'dfischer',
-        room: 1111
-    }),
-    new Person({
-        firstName: 'Erk',
-        lastName: 'Struwe',
-        title: '',
-        nameAddition: '',
-        ldap: 'estruwe',
-        room: 1112
-    })
-]
+app.locals.persons = personData
 
 app.listen(config.port, () => {
     logger.info('listening on port ' + config.port)

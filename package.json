@@ -5,8 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
-    "unit": "istanbul cover --include-all-sources --captureExceptions --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.json",
-    "test": "npm run lint && npm run unit",
+    "test:unit": "istanbul cover --include-all-sources --captureExceptions --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
+    "test:e2e": "jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
+    "test:parallel": "concurrently --prefix name --names lint,e2e,unit \"npm run lint\" \"npm run test:e2e\" \"npm run test:unit\"",
+    "test": "npm run lint && npm run test:e2e && npm run test:unit",
     "start": "node src/index.js",
     "start:dev": "nodemon --watch src",
     "preversion": "npm test",
@@ -35,6 +37,7 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "concurrently": "^3.4.0",
     "eslint": "^3.16.1",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.3",

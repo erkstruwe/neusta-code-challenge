@@ -33,7 +33,7 @@ module.exports = {
 
         // response
         return res.send({
-            room: roomId,
+            room: req.params.id,
             people: persons.map((person) => person.toObject())
         })
     }
