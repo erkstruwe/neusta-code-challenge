@@ -3,13 +3,10 @@ const express = require('express')
 const packageJson = require('../../package.json')
 const apiRouter = require('./api')
 
-const router = express.Router({
-    caseSensitive: true,
-    strict: true
-})
+const router = express.Router()
 
 router.get('/', (req, res) => res.send(packageJson.name + ' ' + packageJson.version))
 
-router.use('/api', apiRouter)
+router.use('/api/', apiRouter)
 
 module.exports = router

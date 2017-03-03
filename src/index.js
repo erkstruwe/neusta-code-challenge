@@ -2,13 +2,15 @@ const express = require('express')
 const compression = require('compression')
 const helmet = require('helmet')
 
-const personData = require('./classes/Person/Person.data')
+const personData = require('./classes/Person.data')
 
 const router = require('./routers')
 const config = require('./config')
 const logger = require('./logger')
 
 const app = express()
+app.enable('case sensitive routing')
+app.enable('strict routing')
 
 app.use(compression())
 app.use(helmet())
@@ -24,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(router)
 
-// test data
+// populate with test data
 app.locals.persons = personData
 
 app.listen(config.port, () => {

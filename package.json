@@ -5,14 +5,17 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
-    "test:unit": "istanbul cover --include-all-sources --captureExceptions --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
-    "test:e2e": "jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
-    "test:parallel": "concurrently --prefix name --names lint,e2e,unit \"npm run lint\" \"npm run test:e2e\" \"npm run test:unit\"",
+    "test:unit": "istanbul cover --include-all-sources --captureExceptions --root src --dir ./coverage/unit -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
+    "test:e2e": "echo \"TODO: Handle sigterm correctly, exclude spec files\" && concurrently --prefix name --names api,e2e --kill-others --success first \"istanbul cover --include-all-sources --captureExceptions --handle-sigint --root src --dir ./coverage/e2e -x '**/*.spec.js' src/index.js \" \"wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json\"",
+    "test:e2e:istanbul": "istanbul cover --include-all-sources --captureExceptions --handle-sigint --root src --dir ./coverage/e2e -x \"**/*.spec.js\" src/index.js",
+    "test:e2e:jasmine": "echo \"'npm run test:e2e:istanbul' to start manual e2e testing\" && wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
+    "test:combine": "istanbul-combine -d coverage/combined coverage/e2e/coverage.json coverage/unit/coverage.json",
     "test": "npm run lint && npm run test:e2e && npm run test:unit",
     "start": "node src/index.js",
     "start:dev": "nodemon --watch src",
     "preversion": "npm test",
-    "postversion": "git push origin master"
+    "postversion": "git push origin master",
+    "istanbul": "istanbul"
   },
   "engines": {
     "node": "^6.9.5",
@@ -31,8 +34,11 @@
   },
   "dependencies": {
     "compression": "^1.6.2",
+    "csv-parse": "^1.2.0",
     "express": "^4.15.0",
+    "express-form-data": "^2.0.0",
     "helmet": "^3.4.1",
+    "highland": "^2.10.2",
     "lodash": "^4.17.4",
     "winston": "^2.3.1"
   },
@@ -40,7 +46,10 @@
     "concurrently": "^3.4.0",
     "eslint": "^3.16.1",
     "istanbul": "^0.4.5",
+    "istanbul-combine": "^0.3.0",
     "jasmine": "^2.5.3",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "request": "^2.79.0",
+    "wait-on": "^2.0.2"
   }
 }

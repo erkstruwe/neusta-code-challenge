@@ -33,4 +33,8 @@ describe('Person class', function() {
         })
     })
 
+    describe('parseCsvPersonString function', function() {
+
+    })
+
 })

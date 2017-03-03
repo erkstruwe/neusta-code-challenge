@@ -1,4 +1,6 @@
 const lodash = require('lodash')
+const highland = require('highland')
+const csvParse = require('csv-parse')
 
 module.exports = class Person {
     constructor(data) {
@@ -21,6 +23,41 @@ module.exports = class Person {
             'title': this.title,
             'name addition': this.nameAddition,
             'ldapuser': this.ldap
+        }
+    }
+
+    static parseCsvThroughStream() {
+        return highland.pipeline((csvStream) => {
+            return csvStream
+                .through(csvParse())
+                .flatMap(this.parseCsvLineArray.bind(this))
+                .compact()
+                .errors(console.error)
+        })
+    }
+
+    static parseCsvLineArray(csvLineArray) {
+        const room = +csvLineArray[0]
+        return lodash.chain(csvLineArray)
+            .drop(1)
+            .map((csvPersonString) => {
+                const personData = this.parseCsvPersonString(csvPersonString)
+                if (personData) {
+                    return Object.assign(
+                        {room},
+                        personData
+                    )
+                }
+            })
+            .value()
+    }
+
+    static parseCsvPersonString(csvPersonString) {
+        if (csvPersonString) {
+            const result = csvPersonString.match(/.*/)
+            return {
+                data: result
+            }
         }
     }
 }

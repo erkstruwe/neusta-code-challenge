@@ -2,6 +2,7 @@ const lodash = require('lodash')
 
 module.exports = {
     find: (req, res) => {
+        // should stream from a real database instead, but prohibited by challenge rules
         return res.send(lodash.chain(req.app.locals)
             .get('persons', [])
             .groupBy('room')
@@ -20,6 +21,7 @@ module.exports = {
         }
 
         // data preparation
+        // should stream from a real database instead, but prohibited by challenge rules
         const roomId = +req.params.id
         const persons = lodash.chain(req.app.locals)
             .get('persons', [])
