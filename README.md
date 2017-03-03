@@ -33,6 +33,7 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
                 </ul>
             </li>
             <li>As an example, data processing of HTTP requests is started <b>as soon as the first chunks of data arrive at the server</b> (while the rest of the request is still being received).</li>
+            <li>The same applies for error handling. If there is a duplicate room <b>on the first two lines of a 10 GB file</b>, the server responds with an error message immediately, not only after several minutes of uploading and analyzing the file.</li>
             <li>After having been processed, chunks of data do not stay in memory. At no time is a large request body fully held in memory.</li>
             <li>With its very low memory usage, it can handle <b>input files of any size</b>, even if they exceed the system's memory.</li>
     </dd>
@@ -59,7 +60,7 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
 
 ## Extras
 ### Test data generator
-Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the files size. The default is `1000`.
+Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the file's size. The default is `1000`.
 
 A value of `100` results in a file with ~900,000 persons and ~10 MB size.
 
@@ -69,7 +70,7 @@ A value of `10000` results in a file with ~90,000,000 persons and ~1 GB size.
 
 And so on...
 
-Use this for testing the API's performance.
+**Use this for testing the API's performance.**
 
 This application is able to parse and save <b>~64,000 persons per second</b> over HTTP on a standard office notebook.
 
