@@ -1,6 +1,7 @@
 const fs = require('fs')
 
 const highland = require('highland')
+const csvParse = require('csv-parse')
 
 const Person = require('./Person')
 const personData = require('./Person.data')
@@ -38,11 +39,13 @@ describe('Person class', function() {
 
     describe('parseCsvThroughStream function', function() {
         it('should parse the test data', function(cb) {
-            const csvFileStream = fs.createReadStream('data/persons.csv', {flags: 'r', encoding: 'utf8'})
-            return highland(csvFileStream)
+            const csvLineArraysStream = fs
+                .createReadStream('data/persons.csv', {flags: 'r', encoding: 'utf8'})
+                .pipe(csvParse())
+            return highland(csvLineArraysStream)
                 .through(Person.parseCsvThroughStream())
                 .toArray((persons) => {
-                    expect(persons.length).toBe(33)
+                    expect(persons.length).toBe(32)
                     return cb()
                 })
         })

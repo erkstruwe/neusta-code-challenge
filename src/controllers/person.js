@@ -3,6 +3,7 @@ const highland = require('highland')
 const csvParse = require('csv-parse')
 
 const Person = require('../classes/Person')
+const personData = require('../classes/Person.data')
 const logger = require('../logger')
 
 module.exports = {
@@ -14,8 +15,10 @@ module.exports = {
         // starts processing immediately (while the rest of the request is still being received)
         // very low memory usage, can handle input files of any size, even if they exceed the system's memory
         // TODO: error handling
-        // TODO: timing
-        logger.profile('data import at POST /api/person')
+        logger.profile('POST /api/person')
+
+        // reset "database"
+        req.app.locals.persons = []
 
         let uniqueRooms = new Set()
         let uniquePersons = new Set()
@@ -24,7 +27,7 @@ module.exports = {
             .through(csvParse())
             // error handling
             // aborts request as soon as an error occurs, even BEFORE the full request has been received (important for large files)
-            // try with a 1 GB file with duplicate rooms on the first two lines... (use wget http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get one)
+            // try with a 1 GB file with duplicate rooms on the first two lines... (use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get a 1 GB file)
             .map((csvLineArray) => {
                 const room = +csvLineArray[0]
                 if (uniqueRooms.has(room)) {
@@ -35,11 +38,13 @@ module.exports = {
             })
             .stopOnError((e) => {
                 logger.warn(e)
+                logger.profile('POST /api/person')
                 return res.error(e.statusCode, e.code, e.message)
             })
             .through(Person.parseCsvThroughStream())
             .stopOnError((e) => {
                 logger.warn(e)
+                logger.profile('POST /api/person')
                 return res.error(400, 100)
             })
             // error handling
@@ -52,12 +57,23 @@ module.exports = {
             })
             .stopOnError((e) => {
                 logger.warn(e)
+                logger.profile('POST /api/person')
                 return res.error(e.statusCode, e.code, e.message)
             })
-            .toArray((persons) => {
-                req.app.locals.persons = persons
-                logger.profile('data import at POST /api/person')
+            // write to "database" in batches of 1000 persons to save round trips
+            .batch(1000)
+            .each((personsBatch) => {
+                req.app.locals.persons.push(...personsBatch)
+            })
+            .done(function() {
+                logger.profile('POST /api/person')
+                logger.info('successfully imported ' + req.app.locals.persons.length + ' persons')
                 return res.send()
             })
-    }]
+    }],
+
+    reset: (req, res) => {
+        req.app.locals.persons = personData
+        return res.send()
+    }
 }

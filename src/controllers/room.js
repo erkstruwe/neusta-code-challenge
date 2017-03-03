@@ -2,10 +2,14 @@ const lodash = require('lodash')
 const highland = require('highland')
 const csvStringify = require('csv-stringify')
 
+const logger = require('../logger')
+
 module.exports = {
     find: (req, res) => {
+        // data preparation
         // this would usually come as a stream from mongodb, but prohibited by challenge rules
-        return res.send(lodash.chain(req.app.locals)
+        logger.profile('GET /api/room/')
+        const result = lodash.chain(req.app.locals)
             .get('persons', [])
             .groupBy('room')
             .map((persons, room) => ({
@@ -13,12 +17,18 @@ module.exports = {
                 people: persons.map((person) => person.toObject())
             }))
             .value()
-        )
+
+        // response
+        logger.profile('GET /api/room/')
+        return res.send(result)
     },
 
     findOne: (req, res) => {
+        logger.profile('GET /api/room/:id')
+
         // error handling
         if (req.params.id.length !== 4) {
+            logger.profile('GET /api/room/:id')
             return res.error(400, 6, 'Room number does not have 4 digits')
         }
 
@@ -32,10 +42,12 @@ module.exports = {
 
         // error handling
         if (!persons.length) {
+            logger.profile('GET /api/room/:id')
             return res.error(404, 5, 'Room not found')
         }
 
         // response
+        logger.profile('GET /api/room/:id')
         return res.send({
             room: req.params.id,
             people: persons.map((person) => person.toObject())
@@ -44,9 +56,10 @@ module.exports = {
 
     // function to create test data in csv format for arbitrary sizes
     // again, there's no upper size limit here, no matter how small the system's memory is
+    // use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10 in your browser to download it
     // maxPersonsPerRoom = 10 => ~1MB, maxPersonsPerRoom = 10000 => ~1GB, and so on
     testData: (req, res) => {
-        const maxPersonsPerRoom = req.query.maxPersonsPerRoom || 10
+        const maxPersonsPerRoom = req.query.maxPersonsPerRoom || 1000
         let personIndex = 0
 
         return highland(lodash.range(1000, 10000))
@@ -64,6 +77,6 @@ module.exports = {
                 return csvLineArray
             })
             .through(csvStringify())
-            .pipe(res)
+            .pipe(res.type('csv').attachment('testData.csv'))
     }
 }

@@ -6,7 +6,17 @@ const config = require('../config')
 
 describe('person controller', function() {
 
-    fdescribe('post /', function() {
+    describe('post /', function() {
+        afterEach(function(cb) {
+            return request(
+                {
+                    method: 'DELETE',
+                    url: config.baseUrl + '/api/person/'
+                },
+                cb
+            )
+        })
+
         it('should return a statusCode of 200 and an empty response for the test data file', function(cb) {
             return request(
                 {
@@ -54,6 +64,23 @@ describe('person controller', function() {
                 (e, r, body) => {
                     expect(r.statusCode).toBe(400)
                     expect(body).toEqual({code: 3, message: jasmine.any(String)})
+                    return cb()
+                }
+            )
+        })
+    })
+
+    describe('delete /', function() {
+        it('should return status code 200', function(cb) {
+            return request(
+                {
+                    method: 'DELETE',
+                    url: config.baseUrl + '/api/person/',
+                    json: true
+                },
+                (e, r, body) => {
+                    expect(r.statusCode).toBe(200)
+                    expect(body).toBeUndefined()
                     return cb()
                 }
             )

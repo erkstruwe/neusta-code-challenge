@@ -47,16 +47,18 @@ module.exports = class Person {
     static parseCsvPersonString(csvPersonString) {
         if (csvPersonString) {
             const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
-            return lodash.omitBy(
-                {
-                    title: result[2],
-                    firstName: result[4],
-                    nameAddition: result[6],
-                    lastName: result[8],
-                    ldap: result[10]
-                },
-                lodash.isUndefined
-            )
+            if (result) {
+                return lodash.omitBy(
+                    {
+                        title: result[2],
+                        firstName: result[4],
+                        nameAddition: result[6],
+                        lastName: result[8],
+                        ldap: result[10]
+                    },
+                    lodash.isUndefined
+                )
+            }
         }
     }
 }

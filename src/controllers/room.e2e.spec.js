@@ -90,4 +90,25 @@ describe('room controller', function() {
         })
     })
 
+    describe('get /testData', function() {
+        it('should get test data with correct mime type and content disposition', function(cb) {
+            return request(
+                {
+                    method: 'GET',
+                    url: config.baseUrl + '/api/room/testData',
+                    qs: {
+                        maxPersonsPerRoom: 10
+                    }
+                },
+                (e, r, body) => {
+                    expect(r.statusCode).toBe(200)
+                    expect(r.headers['content-disposition']).toBe('attachment; filename="testData.csv"')
+                    expect(r.headers['content-type']).toBe('text/csv; charset=utf-8')
+                    expect(body).toBeDefined()
+                    return cb()
+                }
+            )
+        })
+    })
+
 })

@@ -7,7 +7,7 @@ const methodNotAllowedResponse = require('../../responses/methodNotAllowed')
 const router = express.Router()
 
 router.route('/').get(controller.find).all(methodNotAllowedResponse)
-router.route('/testData').get(controller.testData).all(methodNotAllowedResponse)
+router.route('/testData').get(controller.testData).all(methodNotAllowedResponse) // this disables finding room number 'testData' and is here only for testing purposes
 router.route('/:id').get(controller.findOne).all(methodNotAllowedResponse)
 
 module.exports = router
