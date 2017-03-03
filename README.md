@@ -24,17 +24,17 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
     <dd>
         While looking unfamiliar to developers not used to node development, it has huge advantages compared to other approaches:
         <ul>
-            <li>super fast, parallel computing</li>
+            <li>Super fast, parallel computing</li>
             <li>
-                shared back-pressure
+                Shared back-pressure
                 <ul>
-                    <li>data is processed as fast as the slowest consumer in pipeline of streams</li>
-                    <li>e. g. during a file upload, incoming HTTP data is throttled if inserting into database is slow to prevent buffers and memory size from growing</li>
-                    <li>after having been processed, chunks of data do not stay in memory</li>
+                    <li>Data is processed as fast as the slowest consumer in the stream's pipeline.</li>
+                    <li>During a file upload, incoming HTTP data is throttled if a downstream task (e. g. inserting into database) is slow to prevent buffers and memory size from growing.</li>
                 </ul>
             </li>
-            <li>e. g. for HTTP requests, data processing is started as soon as the first chunks of data arrive at the server (while the rest of the request is still being received)</li>
-            <li>with its very low memory usage, it can handle input files of any size, even if they exceed the system's memory</li>
+            <li>As an example, data processing of HTTP requests is started as soon as the first chunks of data arrive at the server (while the rest of the request is still being received).</li>
+            <li>After having been processed, chunks of data do not stay in memory. At no time is a large request body fully held in memory.</li>
+            <li>With its very low memory usage, it can handle input files of any size, even if they exceed the system's memory.</li>
     </dd>
     <dt>Data model</dt>
     <dd>
@@ -46,11 +46,11 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
                 The internal data model is based on the `Person` class only. There is nothing like a `Room` class, since rooms do not have any attributes yet.
             </li>
             <li>
-                To keep a consistent naming scheme, some things have been renamed (redirects are in place where applicable).
+                To keep a consistent naming scheme, some things have been renamed (redirects are in place where applicable):
                 <ul>
-                    <li>POST http://localhost:3000/api/import is also availbale at POST http://localhost:3000/api/person</li>
-                    <li>`people` are called `person` or `persons` respectively throughout the application</li>
-                    <li>a person's attributes are converted from space-separated to camelCase internally to stay consistent with JavaScript conventions and best practices</li>
+                    <li>POST /api/import is also availbale at POST /api/person</li>
+                    <li>`people` are called `person` or `persons` respectively throughout the application.</li>
+                    <li>A person's attributes are converted from space-separated to camelCase internally to stay consistent with JavaScript conventions and best practices.</li>
                 </ul>
             </li>
         </ul>
@@ -59,7 +59,7 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
 
 ## Extras
 ### Test data generator
-Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). It returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the files size. The default is `1000`.
+Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the files size. The default is `1000`.
 
 A value of `100` results in a file with ~900,000 persons and ~10 MB size.
 
@@ -74,12 +74,28 @@ Use this for testing the API's performance.
 This application is able to parse and save ~64,000 persons per second over HTTP on a standard office notebook.
 
 ## Project structure
-TODO
 <dl>
     <dt>coverage</dt>
     <dd>Coverage reports for unit and end to end as well as the combined result in JSON and HTML</dd>
     <dt>data</dt>
     <dd>CSV files used for testing</dd>
+    <dt>src</dt>
+    <dd>
+        <dl>
+            <dt>classes</dt>
+            <dd>The Person class file</dd>
+            <dt>controllers</dt>
+            <dd>REST API controller functions (the ones that actually respond to the request)</dd>
+            <dt>responses</dt>
+            <dd>Response helper functions (e. g. error messages)</dd>
+            <dt>routers</dt>
+            <dd>Hierarchical routing tree representing the URL paths</dd>
+            <dt>config.js</dt>
+            <dd>Global configuration file</dd>
+            <dt>index.js</dt>
+            <dd>Main server entry point used by `npm start`</dd>
+        </dl>
+    </dd>
 </dl>
 
 ## Static code analysis
@@ -89,7 +105,15 @@ npm run lint
 
 ## Testing
 ### Coverage
-TODO
+`classes` and `responses` are covered by unit tests. `controllers` are covered by end to end tests.
+
+Currently, the line coverage status is as follows:
+
+|    Folder   | Line coverage |
+|:-----------:|:-------------:|
+| classes     |       100.0 % |
+| controllers |        95.7 % |
+| responses   |       100.0 % |
 
 ### Unit
 ```
@@ -97,6 +121,8 @@ npm run test:unit
 ```
 
 ### End to end
+During end to end testing, real HTTP requests are fired against the real REST API server.
+
 Start server on terminal 1:
 ```
 npm run test:e2e:istanbul
@@ -105,10 +131,12 @@ Start tests on terminal 2:
 ```
 npm run test:e2e:jasmine
 ```
-Stop server with <kbd>Ctrl</kbd> + <kbd>C</kbd> on terminal 1 after tests have finished.
+Stop server with <kbd>Ctrl</kbd> + <kbd>C</kbd> on terminal 1 after tests have finished to have the coverage report written.
 
 ### Coverage reports
-Located in the `coverage` subfolder. Separated in `unit`, `e2e`, and `combined`. To update combined, run
+Located in the `coverage` folder. Separated into `unit`, `e2e`, and `combined` subfolders. To update `combined`, run
 ```
 npm run test:combine
 ```
+
+##### Thanks for trying!
