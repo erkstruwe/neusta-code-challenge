@@ -3,17 +3,8 @@ const highland = require('highland')
 const csvParse = require('csv-parse')
 
 module.exports = class Person {
-    constructor(data) {
-        const attributes = [
-            'firstName',
-            'lastName',
-            'title',
-            'nameAddition',
-            'ldap',
-            'room'
-        ]
-
-        Object.assign(this, lodash.pick(data, attributes))
+    constructor(title = '', firstName = '', nameAddition = '', lastName = '', ldap = '', room = null) {
+        Object.assign(this, {title, firstName, nameAddition, lastName, ldap, room})
     }
 
     toObject() {
@@ -27,12 +18,10 @@ module.exports = class Person {
     }
 
     static parseCsvThroughStream() {
-        return highland.pipeline((csvStream) => {
-            return csvStream
+        return highland.pipeline((csvFileStream) => {
+            return csvFileStream
                 .through(csvParse())
                 .flatMap(this.parseCsvLineArray.bind(this))
-                .compact()
-                .errors(console.error)
         })
     }
 
@@ -43,21 +32,33 @@ module.exports = class Person {
             .map((csvPersonString) => {
                 const personData = this.parseCsvPersonString(csvPersonString)
                 if (personData) {
-                    return Object.assign(
-                        {room},
-                        personData
+                    return new Person(
+                        personData.title,
+                        personData.firstName,
+                        personData.nameAddition,
+                        personData.lastName,
+                        personData.ldap,
+                        room
                     )
                 }
             })
+            .compact()
             .value()
     }
 
     static parseCsvPersonString(csvPersonString) {
         if (csvPersonString) {
-            const result = csvPersonString.match(/.*/)
-            return {
-                data: result
-            }
+            const result = csvPersonString.match(/((Dr\.) )?(([\wäöüÄÖÜß ]+?) )((van|von|de) )?(([\wäöüÄÖÜß]+) )(\((\w+)\))/)
+            return lodash.omitBy(
+                {
+                    title: result[2],
+                    firstName: result[4],
+                    nameAddition: result[6],
+                    lastName: result[8],
+                    ldap: result[10]
+                },
+                lodash.isUndefined
+            )
         }
     }
 }

@@ -3,7 +3,7 @@
     "spec_files": [
         "**/*.unit.spec.js"
     ],
-    "helpers": [],
+    "helpers": ["jasmineHelper.js"],
     "stopSpecOnExpectationFailure": false,
     "random": true
 }

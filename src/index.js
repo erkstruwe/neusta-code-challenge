@@ -31,4 +31,5 @@ app.locals.persons = personData
 
 app.listen(config.port, () => {
     logger.info('listening on port ' + config.port)
+    logger.info('memory usage', process.memoryUsage())
 })
