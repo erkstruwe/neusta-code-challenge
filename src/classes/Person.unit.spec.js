@@ -72,6 +72,13 @@ describe('Person class', function() {
                 ldap: 'bwayne'
             })
         })
+        it('should parse a name with multiple first names', function() {
+            expect(Person.parseCsvPersonString('Bruce Anton Berta Wayne (bwayne)')).toEqual({
+                firstName: 'Bruce Anton Berta',
+                lastName: 'Wayne',
+                ldap: 'bwayne'
+            })
+        })
         it('should parse a name with special characters', function() {
             expect(Person.parseCsvPersonString('Brüß Wäyne (bwaeyne)')).toEqual({
                 firstName: 'Brüß',
@@ -99,6 +106,15 @@ describe('Person class', function() {
             expect(Person.parseCsvPersonString('Dr. Bruce von Wayne (bvwayne)')).toEqual({
                 title: 'Dr.',
                 firstName: 'Bruce',
+                nameAddition: 'von',
+                lastName: 'Wayne',
+                ldap: 'bvwayne'
+            })
+        })
+        it('should parse a name with title and addition  and multiple first names', function() {
+            expect(Person.parseCsvPersonString('Dr. Bruce Anton Berta von Wayne (bvwayne)')).toEqual({
+                title: 'Dr.',
+                firstName: 'Bruce Anton Berta',
                 nameAddition: 'von',
                 lastName: 'Wayne',
                 ldap: 'bvwayne'

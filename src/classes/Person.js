@@ -1,6 +1,5 @@
 const lodash = require('lodash')
 const highland = require('highland')
-const csvParse = require('csv-parse')
 
 module.exports = class Person {
     constructor(title = '', firstName = '', nameAddition = '', lastName = '', ldap = '', room = null) {
@@ -18,9 +17,8 @@ module.exports = class Person {
     }
 
     static parseCsvThroughStream() {
-        return highland.pipeline((csvFileStream) => {
-            return csvFileStream
-                .through(csvParse())
+        return highland.pipeline((csvLineArraysStream) => {
+            return csvLineArraysStream
                 .flatMap(this.parseCsvLineArray.bind(this))
         })
     }
@@ -48,7 +46,7 @@ module.exports = class Person {
 
     static parseCsvPersonString(csvPersonString) {
         if (csvPersonString) {
-            const result = csvPersonString.match(/((Dr\.) )?(([\wäöüÄÖÜß ]+?) )((van|von|de) )?(([\wäöüÄÖÜß]+) )(\((\w+)\))/)
+            const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
             return lodash.omitBy(
                 {
                     title: result[2],
