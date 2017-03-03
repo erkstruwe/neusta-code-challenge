@@ -114,7 +114,7 @@ describe('Person class', function() {
                 ldap: 'bvwayne'
             })
         })
-        it('should parse a name with title and addition  and multiple first names', function() {
+        it('should parse a name with title and addition and multiple first names', function() {
             expect(Person.parseCsvPersonString('Dr. Bruce Anton Berta von Wayne (bvwayne)')).toEqual({
                 title: 'Dr.',
                 firstName: 'Bruce Anton Berta',
