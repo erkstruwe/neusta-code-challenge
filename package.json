@@ -11,7 +11,7 @@
     "test:e2e:jasmine": "echo \"'npm run test:e2e:istanbul' to start manual e2e testing\" && wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
     "test:combine": "istanbul-combine -d coverage/combined coverage/e2e/coverage.json coverage/unit/coverage.json",
     "test": "npm run lint && npm run test:e2e && npm run test:unit",
-    "start": "node src/index.js",
+    "start": "cross-env NODE_ENV=production node src/index.js",
     "start:dev": "nodemon --watch src",
     "preversion": "npm test",
     "postversion": "git push origin master",
@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "compression": "^1.6.2",
+    "cross-env": "^3.1.4",
     "csv-parse": "^1.2.0",
     "csv-stringify": "^1.0.4",
     "express": "^4.15.0",

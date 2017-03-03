@@ -12,7 +12,7 @@ npm install
 ```
 npm start
 ```
-Server will be available at http://localhost:3000/.
+The server will be available at [http://localhost:3000/](http://localhost:3000/).
 
 ## Design decisions
 <dl>
@@ -59,11 +59,28 @@ Server will be available at http://localhost:3000/.
 
 ## Extras
 ### Test data generator
-Get test data of arbitrary size at http://localhost:3000/api/room/testData. It returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the files size. The default is 1,000, resulting in a file with ~9,000,000 persons and ~100 MB size.
+Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). It returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the files size. The default is `1000`.
+
+A value of `100` results in a file with ~900,000 persons and ~10 MB size.
+
+A value of `1000` results in a file with ~9,000,000 persons and ~100 MB size.
+
+A value of `10000` results in a file with ~90,000,000 persons and ~1 GB size.
+
+And so on...
 
 Use this for testing the API's performance.
 
-This application is able to import ~32,000 persons per second over HTTP on a standard office notebook.
+This application is able to parse and save ~64,000 persons per second over HTTP on a standard office notebook.
+
+## Project structure
+TODO
+<dl>
+    <dt>coverage</dt>
+    <dd>Coverage reports for unit and end to end as well as the combined result in JSON and HTML</dd>
+    <dt>data</dt>
+    <dd>CSV files used for testing</dd>
+</dl>
 
 ## Static code analysis
 ```
@@ -71,6 +88,9 @@ npm run lint
 ```
 
 ## Testing
+### Coverage
+TODO
+
 ### Unit
 ```
 npm run test:unit

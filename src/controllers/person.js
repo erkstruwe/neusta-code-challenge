@@ -14,7 +14,6 @@ module.exports = {
         // shared back-pressure: data is processed as fast as the slowest consumer, e. g. incoming HTTP data is throttled if inserting into database was slow to prevent buffers and memory size from growing
         // starts processing immediately (while the rest of the request is still being received)
         // very low memory usage, can handle input files of any size, even if they exceed the system's memory
-        // TODO: error handling
         logger.profile('POST /api/person')
 
         // reset "database"
@@ -60,8 +59,8 @@ module.exports = {
                 logger.profile('POST /api/person')
                 return res.error(e.statusCode, e.code, e.message)
             })
-            // write to "database" in batches of 1000 persons to save round trips
-            .batch(1000)
+            // write to "database" in batches of 10,000 persons to save round trips
+            .batch(10000)
             .each((personsBatch) => {
                 req.app.locals.persons.push(...personsBatch)
             })

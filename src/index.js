@@ -8,6 +8,7 @@ const router = require('./routers')
 const config = require('./config')
 const logger = require('./logger')
 
+// TODO: multiple processes
 const app = express()
 app.enable('case sensitive routing')
 app.enable('strict routing')
