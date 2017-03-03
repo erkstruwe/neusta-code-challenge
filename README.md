@@ -17,9 +17,9 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
 ## Design decisions
 <dl>
     <dt>Node.js</dt>
-    <dd>The task is I/O-heavy. Node.js is built for that. Splitting a task into subtasks and running them in parallel is a breeze.</dd>
+    <dd>The task is I/O-heavy. Node.js is built for that. Splitting a task into subtasks and running them <b>in parallel</b> is a breeze.</dd>
     <dt>Express</dt>
-    <dd>Very little code necessary to get a secure high-performance REST API going.</dd>
+    <dd>Very little code necessary to get a <b>secure high-performance</b> REST API going.</dd>
     <dt>Node.js' stream API</dt>
     <dd>
         While looking unfamiliar to developers not used to node development, it has huge advantages compared to other approaches:
@@ -32,9 +32,9 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
                     <li>During a file upload, incoming HTTP data is throttled if a downstream task (e. g. inserting into database) is slow to prevent buffers and memory size from growing.</li>
                 </ul>
             </li>
-            <li>As an example, data processing of HTTP requests is started as soon as the first chunks of data arrive at the server (while the rest of the request is still being received).</li>
+            <li>As an example, data processing of HTTP requests is started <b>as soon as the first chunks of data arrive at the server</b> (while the rest of the request is still being received).</li>
             <li>After having been processed, chunks of data do not stay in memory. At no time is a large request body fully held in memory.</li>
-            <li>With its very low memory usage, it can handle input files of any size, even if they exceed the system's memory.</li>
+            <li>With its very low memory usage, it can handle <b>input files of any size</b>, even if they exceed the system's memory.</li>
     </dd>
     <dt>Data model</dt>
     <dd>
@@ -71,7 +71,7 @@ And so on...
 
 Use this for testing the API's performance.
 
-This application is able to parse and save ~64,000 persons per second over HTTP on a standard office notebook.
+This application is able to parse and save <b>~64,000 persons per second</b> over HTTP on a standard office notebook.
 
 ## Project structure
 <dl>
