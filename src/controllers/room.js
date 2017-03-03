@@ -1,5 +1,6 @@
 const lodash = require('lodash')
 const highland = require('highland')
+const csvStringify = require('csv-stringify')
 
 module.exports = {
     find: (req, res) => {
@@ -39,5 +40,30 @@ module.exports = {
             room: req.params.id,
             people: persons.map((person) => person.toObject())
         })
+    },
+
+    // function to create test data in csv format for arbitrary sizes
+    // again, there's no upper size limit here, no matter how small the system's memory is
+    // maxPersonsPerRoom = 10 => ~1MB, maxPersonsPerRoom = 10000 => ~1GB, and so on
+    testData: (req, res) => {
+        const maxPersonsPerRoom = req.query.maxPersonsPerRoom || 10
+        let personIndex = 0
+
+        return highland(lodash.range(1000, 10000))
+            .map((roomNumber) => {
+                const personCount = lodash.random(0, maxPersonsPerRoom)
+                let csvLineArray = [roomNumber]
+                for (let i = 0; i  < maxPersonsPerRoom; i++) {
+                    personIndex++
+                    if (i < personCount) {
+                        csvLineArray.push(personIndex + ' ' + personIndex + ' (' + personIndex + ')')
+                    } else {
+                        csvLineArray.push('')
+                    }
+                }
+                return csvLineArray
+            })
+            .through(csvStringify())
+            .pipe(res)
     }
 }

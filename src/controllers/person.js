@@ -24,7 +24,7 @@ module.exports = {
             .through(csvParse())
             // error handling
             // aborts request as soon as an error occurs, even BEFORE the full request has been received (important for large files)
-            // try with a 1 GB file with duplicate rooms on the first two lines...
+            // try with a 1 GB file with duplicate rooms on the first two lines... (use wget http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get one)
             .map((csvLineArray) => {
                 const room = +csvLineArray[0]
                 if (uniqueRooms.has(room)) {
