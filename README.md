@@ -94,7 +94,9 @@ This application is able to parse and save <b>~64,000 persons per second</b> ove
             <dt>config.js</dt>
             <dd>Global configuration file</dd>
             <dt>index.js</dt>
-            <dd>Main server entry point used by `npm start`</dd>
+            <dd>Main server entry point used by `npm start`. Spawns 1 web worker in this version. Will spawn 1 web worker per CPU core as soon as a real database can be used.</dd>
+            <dt>server.js</dt>
+            <dd>The web worker as an Express application.</dd>
         </dl>
     </dd>
 </dl>
