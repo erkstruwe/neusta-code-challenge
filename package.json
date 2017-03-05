@@ -14,8 +14,7 @@
     "start": "cross-env NODE_ENV=production node src/index.js",
     "start:dev": "nodemon --watch src",
     "preversion": "npm test",
-    "postversion": "git push origin master",
-    "istanbul": "istanbul"
+    "postversion": "git push origin master"
   },
   "engines": {
     "node": "^6.10.0",

@@ -62,9 +62,9 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
 ### Person endpoints
 Endpoints for persons have been added to make the REST API "more complete".
 
-Use [http://localhost:3000/api/person](http://localhost:3000/api/person) to get a list of all persons.
+Use GET [http://localhost:3000/api/person](http://localhost:3000/api/person) to get a list of all persons.
 
-Use http://localhost:3000/api/person/:ldap (e. g. [http://localhost:3000/api/person/bwayne](http://localhost:3000/api/bwayne)) to find a person by his or her ldap name.
+Use GET http://localhost:3000/api/person/:ldap (e. g. GET [http://localhost:3000/api/person/bwayne](http://localhost:3000/api/bwayne)) to find a person by his or her ldap name.
 
 ### Test data generator
 Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the file's size. The default is `1000`.
@@ -77,7 +77,7 @@ A value of `10000` results in a file with ~90,000,000 persons and ~1 GB size.
 
 And so on...
 
-**Use this for testing the API's performance.**
+**Use these to test the API's performance.**
 
 This application is able to parse and save <b>~64,000 persons per second</b> over HTTP on a standard office notebook.
 
