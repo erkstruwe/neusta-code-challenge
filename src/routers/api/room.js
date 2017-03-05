@@ -1,10 +1,11 @@
 const express = require('express')
 
+const config = require('../../config')
 const controller = require('../../controllers/room')
 const methodNotAllowedResponse = require('../../responses/methodNotAllowed')
 
 // router
-const router = express.Router()
+const router = express.Router(config.routing)
 
 router.route('/').get(controller.find).all(methodNotAllowedResponse)
 router.route('/testData').get(controller.testData).all(methodNotAllowedResponse) // this disables finding room number 'testData' and is here only for testing purposes

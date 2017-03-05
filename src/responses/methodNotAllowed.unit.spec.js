@@ -8,8 +8,8 @@ describe('methodNotAllowed response', function() {
 
     it('should set the statusCode to 405 and return an empty response', function() {
         response(this.req, this.res)
-        const r = this.res.send.calls.mostRecent().args[0]
         expect(this.res.status).toHaveBeenCalledWith(405)
-        expect(r).toBeUndefined()
+        const r = this.res.json.calls.mostRecent().args[0]
+        expect(r).toBe(null)
     })
 })

@@ -45,20 +45,22 @@ module.exports = class Person {
     }
 
     static parseCsvPersonString(csvPersonString) {
-        if (csvPersonString) {
-            const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
-            if (result) {
-                return lodash.omitBy(
-                    {
-                        title: result[2],
-                        firstName: result[4],
-                        nameAddition: result[6],
-                        lastName: result[8],
-                        ldap: result[10]
-                    },
-                    lodash.isUndefined
-                )
-            }
+        if (!csvPersonString) {
+            return
         }
+        const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
+        if (!result) {
+            throw {statusCode: 400, code: 4, message: 'Invalid csv column'}
+        }
+        return lodash.omitBy(
+            {
+                title: result[2],
+                firstName: result[4],
+                nameAddition: result[6],
+                lastName: result[8],
+                ldap: result[10]
+            },
+            lodash.isUndefined
+        )
     }
 }

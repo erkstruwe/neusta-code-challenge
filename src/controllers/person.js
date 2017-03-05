@@ -1,9 +1,11 @@
 const formDataMiddleware = require('express-form-data')
+const lodash = require('lodash')
 const highland = require('highland')
 const csvParse = require('csv-parse')
 
 const Person = require('../classes/Person')
 const personData = require('../classes/Person.data')
+const config = require('../config')
 const logger = require('../logger')
 
 module.exports = {
@@ -16,13 +18,22 @@ module.exports = {
         // very low memory usage, can handle input files of any size, even if they exceed the system's memory
         logger.profile('POST /api/person')
 
-        // reset "database"
+        // error handling
+        const fileStreams = lodash.chain(req)
+            .get('files', {})
+            .values()
+            .value()
+        if (fileStreams.length !== 1) {
+            return res.error(400, 100, 'The number of file uploads does not equal 1')
+        }
+
+        // reset "database" (no hint in challenge rules if this should happen here or only in success case)
         req.app.locals.persons = []
 
         let uniqueRooms = new Set()
         let uniquePersons = new Set()
 
-        return highland(req.files.persons)
+        return highland(fileStreams[0])
             .through(csvParse())
             // error handling
             // aborts request as soon as an error occurs, even BEFORE the full request has been received (important for large files)
@@ -37,14 +48,12 @@ module.exports = {
             })
             .stopOnError((e) => {
                 logger.warn(e)
-                logger.profile('POST /api/person')
                 return res.error(e.statusCode, e.code, e.message)
             })
             .through(Person.parseCsvThroughStream())
             .stopOnError((e) => {
                 logger.warn(e)
-                logger.profile('POST /api/person')
-                return res.error(400, 100)
+                return res.error(e.statusCode, e.code, e.message)
             })
             // error handling
             .map((person) => {
@@ -56,23 +65,39 @@ module.exports = {
             })
             .stopOnError((e) => {
                 logger.warn(e)
-                logger.profile('POST /api/person')
                 return res.error(e.statusCode, e.code, e.message)
             })
-            // write to "database" in batches of 10,000 persons to save round trips
-            .batch(10000)
+            // write to database in batches to save network round trips
+            .batch(config.batchSize)
             .each((personsBatch) => {
-                req.app.locals.persons.push(...personsBatch)
+                // only write to database if no error occurred
+                if (!res.headersSent) {
+                    req.app.locals.persons.push(...personsBatch)
+                }
             })
             .done(function() {
                 logger.profile('POST /api/person')
-                logger.info('successfully imported ' + req.app.locals.persons.length + ' persons')
-                return res.send()
+                if (!res.headersSent) {
+                    logger.info('successfully imported ' + req.app.locals.persons.length + ' persons')
+                    return res.json(null)
+                }
             })
     }],
 
     reset: (req, res) => {
         req.app.locals.persons = personData
-        return res.send()
+        return res.json(null)
+    },
+
+    find: (req, res) => {
+        return res.send(req.app.locals.persons.map((person) => person.toObject()))
+    },
+
+    findOne: (req, res) => {
+        const person = lodash.find(req.app.locals.persons, {ldap: req.params.ldap})
+        if (person) {
+            return res.send(person.toObject())
+        }
+        return res.error(404, 101, 'No user found with ldap ' + req.params.ldap)
     }
 }

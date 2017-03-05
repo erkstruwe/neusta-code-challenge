@@ -3,6 +3,17 @@ const request = require('request')
 const config = require('../config')
 
 describe('room controller', function() {
+    beforeAll(function(cb) {
+        // reset "database" to test data
+        return request(
+            {
+                method: 'DELETE',
+                url: config.baseUrl + '/api/person/',
+                json: true
+            },
+            cb
+        )
+    })
 
     describe('get /', function() {
         it('should return an array of rooms with grouped and mapped persons in them', function(cb) {
@@ -14,6 +25,7 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(200)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body.length).toBe(2)
                     expect(body[0].room).toBe('1000') // sic! string
                     expect(body[0].people.length).toBe(2)
@@ -36,7 +48,8 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(405)
-                    expect(body).toBeUndefined()
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
+                    expect(body).toBe(null)
                     return cb()
                 }
             )
@@ -53,6 +66,7 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(200)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body.room).toBe('1000') //sic! string
                     expect(body.people.length).toBe(2)
                     expect(body.people[0]['first name']).toBe('Bruce')
@@ -69,6 +83,7 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(400)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body).toEqual({code: 6, message: jasmine.any(String)})
                     return cb()
                 }
@@ -83,6 +98,7 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(404)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body).toEqual({code: 5, message: jasmine.any(String)})
                     return cb()
                 }
@@ -102,8 +118,8 @@ describe('room controller', function() {
                 },
                 (e, r, body) => {
                     expect(r.statusCode).toBe(200)
-                    expect(r.headers['content-disposition']).toBe('attachment; filename="testData.csv"')
                     expect(r.headers['content-type']).toBe('text/csv; charset=utf-8')
+                    expect(r.headers['content-disposition']).toBe('attachment; filename="testData.csv"')
                     expect(body).toBeDefined()
                     return cb()
                 }

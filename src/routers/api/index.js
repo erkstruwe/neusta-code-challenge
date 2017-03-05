@@ -1,11 +1,12 @@
 const express = require('express')
 
+const config = require('../../config')
 const roomRouter = require('./room')
 const personRouter = require('./person')
 const methodNotAllowedResponse = require('../../responses/methodNotAllowed')
 
 // router
-const router = express.Router()
+const router = express.Router(config.routing)
 
 router.use('/room/', roomRouter)
 router.use('/person/', personRouter)

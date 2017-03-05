@@ -45,7 +45,18 @@ describe('Person class', function() {
             return highland(csvLineArraysStream)
                 .through(Person.parseCsvThroughStream())
                 .toArray((persons) => {
-                    expect(persons.length).toBe(32)
+                    expect(persons.length).toBe(33)
+                    return cb()
+                })
+        })
+        it('should parse the original test data', function(cb) {
+            const csvLineArraysStream = fs
+                .createReadStream('data/personsOriginal.csv', {flags: 'r', encoding: 'utf8'})
+                .pipe(csvParse())
+            return highland(csvLineArraysStream)
+                .through(Person.parseCsvThroughStream())
+                .toArray((persons) => {
+                    expect(persons.length).toBe(33)
                     return cb()
                 })
         })
@@ -67,6 +78,9 @@ describe('Person class', function() {
     describe('parseCsvPersonString function', function() {
         it('should return undefined for an empty string', function() {
             expect(Person.parseCsvPersonString('')).toBeUndefined()
+        })
+        it('should throw for a string that does not match', function() {
+            expect(() => Person.parseCsvPersonString('Bruce')).toThrow({statusCode: 400, code: 4, message: jasmine.any(String)})
         })
         it('should parse a simple name', function() {
             expect(Person.parseCsvPersonString('Bruce Wayne (bwayne)')).toEqual({

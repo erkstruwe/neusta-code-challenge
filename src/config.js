@@ -1,6 +1,12 @@
 let config = {
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 3000,
+    // should be ~10,000 when using a real database
+    batchSize: Infinity,
+    routing: {
+        caseSensitive: true,
+        strict: true
+    }
 }
 
 config.baseUrl = 'http://localhost:' + config.port

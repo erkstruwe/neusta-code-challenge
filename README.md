@@ -59,6 +59,13 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
 </dl>
 
 ## Extras
+### Person endpoints
+Endpoints for persons have been added to make the REST API "more complete".
+
+Use [http://localhost:3000/api/person](http://localhost:3000/api/person) to get a list of all persons.
+
+Use http://localhost:3000/api/person/:ldap (e. g. [http://localhost:3000/api/person/bwayne](http://localhost:3000/api/bwayne)) to find a person by his or her ldap name.
+
 ### Test data generator
 Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the file's size. The default is `1000`.
 
@@ -75,6 +82,8 @@ And so on...
 This application is able to parse and save <b>~64,000 persons per second</b> over HTTP on a standard office notebook.
 
 ## Project structure
+The project structure is heavily inspired by popular REST/MVC frameworks like Sails.js.
+
 <dl>
     <dt>coverage</dt>
     <dd>Coverage reports for unit and end to end as well as the combined result in JSON and HTML</dd>
@@ -86,15 +95,17 @@ This application is able to parse and save <b>~64,000 persons per second</b> ove
             <dt>classes</dt>
             <dd>The Person class file</dd>
             <dt>controllers</dt>
-            <dd>REST API controller functions (the ones that actually respond to the request)</dd>
+            <dd>REST API controller functions (the ones that actually respond to the request). <b>These <em>are</em> the functions you're looking for...</b></dd>
+            <dt>middlewares</dt>
+            <dd>Functions altering the request or response object before routing takes place</dd>
             <dt>responses</dt>
-            <dd>Response helper functions (e. g. error messages)</dd>
+            <dd>Response helper functions (e. g. static error messages)</dd>
             <dt>routers</dt>
             <dd>Hierarchical routing tree representing the URL paths</dd>
             <dt>config.js</dt>
             <dd>Global configuration file</dd>
             <dt>index.js</dt>
-            <dd>Main server entry point used by `npm start`. Spawns 1 web worker in this version. Will spawn 1 web worker per CPU core as soon as a real database can be used.</dd>
+            <dd>Main server entry point used by `npm start`. Spawns 1 web worker in this version. Will spawn 1 web worker per CPU core as soon as a real database may be used.</dd>
             <dt>server.js</dt>
             <dd>The web worker as an Express application.</dd>
         </dl>
@@ -108,7 +119,7 @@ npm run lint
 
 ## Testing
 ### Coverage
-`classes` and `responses` are covered by unit tests. `controllers` are covered by end to end tests.
+`classes` and `responses` are covered by unit tests in `*.unit.spec.js` files. `controllers` are covered by end to end tests in `*.e2e.spec.js` files.
 
 Currently, the line coverage status is as follows:
 
