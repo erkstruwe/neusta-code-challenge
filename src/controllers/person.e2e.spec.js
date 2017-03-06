@@ -97,6 +97,24 @@ describe('person controller', function() {
                 }
             )
         })
+        it('should return an error for invalid room', function(cb) {
+            return request(
+                {
+                    method: 'POST',
+                    url: config.baseUrl + '/api/person/',
+                    json: true,
+                    formData: {
+                        persons: fs.createReadStream('data/invalidRoom.csv')
+                    }
+                },
+                (e, r, body) => {
+                    expect(r.statusCode).toBe(400)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
+                    expect(body).toEqual({code: 4, message: jasmine.any(String)})
+                    return cb()
+                }
+            )
+        })
         it('should return an error for more than one file upload', function(cb) {
             return request(
                 {

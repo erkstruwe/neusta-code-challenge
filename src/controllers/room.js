@@ -14,7 +14,7 @@ module.exports = {
             .groupBy('room')
             .map((persons, room) => ({
                 room,
-                people: persons.map((person) => person.toObject())
+                people: persons.map((person) => person.forOutput())
             }))
             .value()
 
@@ -34,10 +34,9 @@ module.exports = {
 
         // data preparation
         // this would usually come as a stream from mongodb, but prohibited by challenge rules
-        const roomId = +req.params.id
         const persons = lodash.chain(req.app.locals)
             .get('persons', [])
-            .filter({room: roomId})
+            .filter({room: req.params.id})
             .value()
 
         // error handling
@@ -50,7 +49,7 @@ module.exports = {
         logger.profile('GET /api/room/:id')
         return res.send({
             room: req.params.id,
-            people: persons.map((person) => person.toObject())
+            people: persons.map((person) => person.forOutput())
         })
     },
 

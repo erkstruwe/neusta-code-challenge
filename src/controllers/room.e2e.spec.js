@@ -27,10 +27,10 @@ describe('room controller', function() {
                     expect(r.statusCode).toBe(200)
                     expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body.length).toBe(2)
-                    expect(body[0].room).toBe('1000') // sic! string
+                    expect(body[0].room).toBe('1000')
                     expect(body[0].people.length).toBe(2)
                     expect(body[0].people[0]['first name']).toBe('Bruce')
-                    expect(body[1].room).toBe('1001') // sic! string
+                    expect(body[1].room).toBe('1001')
                     expect(body[1].people.length).toBe(1)
                     return cb()
                 }
@@ -67,7 +67,7 @@ describe('room controller', function() {
                 (e, r, body) => {
                     expect(r.statusCode).toBe(200)
                     expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
-                    expect(body.room).toBe('1000') //sic! string
+                    expect(body.room).toBe('1000')
                     expect(body.people.length).toBe(2)
                     expect(body.people[0]['first name']).toBe('Bruce')
                     return cb()

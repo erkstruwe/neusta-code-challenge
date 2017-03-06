@@ -41,6 +41,7 @@
     "helmet": "^3.4.1",
     "highland": "^2.10.2",
     "lodash": "^4.17.4",
+    "mongoose": "^4.8.6",
     "throng": "^4.0.0",
     "winston": "^2.3.1"
   },

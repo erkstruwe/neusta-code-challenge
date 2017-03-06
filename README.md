@@ -41,10 +41,13 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
     <dd>
         <ul>
             <li>
-                Instead of a database, a local variable is used in order to comply with the challenge's rules. This should not be done in production and renders some of the stream API's advantages useless (like e. g. unlimited file size or streaming from and to the database).
+                Instead of a database, a local variable is used as storage in order to comply with the challenge's rules. This should not be done in production and renders some of the stream API's advantages useless (like e. g. unlimited file size or streaming from and to the database).
             </li>
             <li>
-                The internal data model is based on the `Person` class only. There is nothing like a `Room` class, since rooms do not have any attributes yet.
+                The data-modelling library Mongoose is used to define the Person schema. Thus, the appllication takes advantage of its structured way of definig a schema, built-in validation support, good testability, and the possibility to <b>switch to a Mongo DB as the persistance layer with just a few lines</b>.
+            </li>
+            <li>
+                The internal data model is based on the `Person` schema only. There is nothing like a `Room` schema, since rooms do not have any attributes yet.
             </li>
             <li>
                 To keep a consistent naming scheme, some things have been renamed (redirects are in place where applicable):
@@ -93,7 +96,7 @@ The project structure is heavily inspired by popular REST/MVC frameworks like Sa
     <dd>
         <dl>
             <dt>classes</dt>
-            <dd>The Person class file</dd>
+            <dd>The Person schema and model (Mongoose)</dd>
             <dt>controllers</dt>
             <dd>REST API controller functions (the ones that actually respond to the request). <b>These <em>are</em> the functions you're looking for...</b></dd>
             <dt>middlewares</dt>

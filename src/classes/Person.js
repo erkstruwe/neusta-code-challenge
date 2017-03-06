@@ -1,12 +1,47 @@
+const mongoose = require('mongoose')
 const lodash = require('lodash')
 const highland = require('highland')
 
-module.exports = class Person {
-    constructor(title = '', firstName = '', nameAddition = '', lastName = '', ldap = '', room = null) {
-        Object.assign(this, {title, firstName, nameAddition, lastName, ldap, room})
+const schema = new mongoose.Schema(
+    {
+        title: {
+            type: String,
+            enum: ['Dr.']
+        },
+        firstName: {
+            type: String,
+            required: true
+        },
+        nameAddition: {
+            type: String,
+            enum: ['von', 'van', 'de']
+        },
+        lastName: {
+            type: String,
+            required: true
+        },
+        ldap: {
+            type: String,
+            required: true
+        },
+        room: {
+            type: String,
+            required: true,
+            minlength: 4,
+            maxlength: 4
+        }
     }
+)
 
-    toObject() {
+schema.virtual('fullName').get(function () {
+    return lodash.chain([this.title, this.firstName, this.nameAddition, this.lastName])
+        .compact()
+        .join(' ')
+        .value()
+})
+
+schema.methods = {
+    forOutput: function() {
         return {
             'first name': this.firstName,
             'last name': this.lastName,
@@ -15,52 +50,42 @@ module.exports = class Person {
             'ldapuser': this.ldap
         }
     }
+}
 
-    static parseCsvThroughStream() {
+schema.statics = {
+    parseCsvThroughStream: function() {
         return highland.pipeline((csvLineArraysStream) => {
             return csvLineArraysStream
-                .flatMap(this.parseCsvLineArray.bind(this))
+                .flatMap(Person.parseCsvLineArray)
         })
-    }
-
-    static parseCsvLineArray(csvLineArray) {
-        const room = +csvLineArray[0]
+    },
+    parseCsvLineArray: function(csvLineArray) {
+        const room = csvLineArray[0]
         return lodash.chain(csvLineArray)
             .drop(1)
-            .map((csvPersonString) => {
-                const personData = this.parseCsvPersonString(csvPersonString)
-                if (personData) {
-                    return new Person(
-                        personData.title,
-                        personData.firstName,
-                        personData.nameAddition,
-                        personData.lastName,
-                        personData.ldap,
-                        room
-                    )
-                }
-            })
+            .map((csvPersonString) => csvPersonString ? Person.parseCsvPersonString(csvPersonString, room) : null)
             .compact()
             .value()
-    }
-
-    static parseCsvPersonString(csvPersonString) {
+    },
+    parseCsvPersonString: function(csvPersonString, room) {
         if (!csvPersonString) {
-            return
+            throw {statusCode: 400, code: 4, message: 'Invalid person string \'' + csvPersonString + '\''}
         }
         const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
         if (!result) {
-            throw {statusCode: 400, code: 4, message: 'Invalid csv column'}
+            throw {statusCode: 400, code: 4, message: 'Invalid person string \'' + csvPersonString + '\''}
         }
-        return lodash.omitBy(
-            {
-                title: result[2],
-                firstName: result[4],
-                nameAddition: result[6],
-                lastName: result[8],
-                ldap: result[10]
-            },
-            lodash.isUndefined
-        )
+        return new Person({
+            title: result[2],
+            firstName: result[4],
+            nameAddition: result[6],
+            lastName: result[8],
+            ldap: result[10],
+            room
+        })
     }
 }
+
+const Person = mongoose.model('Person', schema)
+
+module.exports = Person

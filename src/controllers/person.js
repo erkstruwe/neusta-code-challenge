@@ -38,6 +38,7 @@ module.exports = {
             // error handling
             // aborts request as soon as an error occurs, even BEFORE the full request has been received (important for large files)
             // try with a 1 GB file with duplicate rooms on the first two lines... (use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get a 1 GB file)
+            // validate unique room
             .map((csvLineArray) => {
                 const room = +csvLineArray[0]
                 if (uniqueRooms.has(room)) {
@@ -46,16 +47,20 @@ module.exports = {
                 uniqueRooms.add(room)
                 return csvLineArray
             })
-            .stopOnError((e) => {
-                logger.warn(e)
-                return res.error(e.statusCode, e.code, e.message)
-            })
             .through(Person.parseCsvThroughStream())
-            .stopOnError((e) => {
-                logger.warn(e)
-                return res.error(e.statusCode, e.code, e.message)
+            // validate person
+            .map((person) => {
+                const validationResult = person.validateSync()
+                if (validationResult) {
+                    throw {
+                        statusCode: 400,
+                        code: 4,
+                        message: lodash.map(validationResult.errors, (error) => error.message).join(' ')
+                    }
+                }
+                return person
             })
-            // error handling
+            // validate unique person
             .map((person) => {
                 if (uniquePersons.has(person.ldap)) {
                     throw {statusCode: 400, code: 3, message: 'Duplicate person with ldap ' + person.ldap}
@@ -63,6 +68,7 @@ module.exports = {
                 uniquePersons.add(person.ldap)
                 return person
             })
+            // error handling
             .stopOnError((e) => {
                 logger.warn(e)
                 return res.error(e.statusCode, e.code, e.message)
@@ -90,13 +96,13 @@ module.exports = {
     },
 
     find: (req, res) => {
-        return res.send(req.app.locals.persons.map((person) => person.toObject()))
+        return res.send(req.app.locals.persons.map((person) => person.forOutput()))
     },
 
     findOne: (req, res) => {
         const person = lodash.find(req.app.locals.persons, {ldap: req.params.ldap})
         if (person) {
-            return res.send(person.toObject())
+            return res.send(person.forOutput())
         }
         return res.error(404, 101, 'No user found with ldap ' + req.params.ldap)
     }

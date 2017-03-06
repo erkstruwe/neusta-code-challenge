@@ -1,7 +1,7 @@
 const Person = require('./Person')
 
 module.exports = [
-    new Person('Dr.', 'Bruce', 'von', 'Wayne', 'bvwayne', 1000),
-    new Person(undefined, 'Blade', undefined, 'Daywalker', 'bdaywalker', 1000),
-    new Person(undefined, 'Mickey', undefined, 'Mouse', 'mmouse', 1001)
+    new Person({title:'Dr.', firstName: 'Bruce', nameAddition: 'von', lastName: 'Wayne', ldap: 'bvwayne', room: '1000'}),
+    new Person({firstName: 'Blade', lastName: 'Daywalker', ldap: 'bdaywalker', room: '1000'}),
+    new Person({firstName: 'Mickey', lastName: 'Mouse', ldap: 'mmouse', room: '1001'})
 ]
