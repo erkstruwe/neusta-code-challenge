@@ -39,6 +39,16 @@ schema.virtual('fullName').get(function () {
         .join(' ')
         .value()
 })
+schema.virtual('csvPersonString').set(function (csvPersonString) {
+    const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
+    if (result) {
+        this.title = result[2]
+        this.firstName = result[4]
+        this.nameAddition = result[6]
+        this.lastName = result[8]
+        this.ldap = result[10]
+    }
+})
 
 schema.methods = {
     forOutput: function() {
@@ -63,26 +73,14 @@ schema.statics = {
         const room = csvLineArray[0]
         return lodash.chain(csvLineArray)
             .drop(1)
-            .map((csvPersonString) => csvPersonString ? Person.parseCsvPersonString(csvPersonString, room) : null)
             .compact()
+            .map((csvPersonString) => {
+                let person = new Person
+                person.room = room
+                person.csvPersonString = csvPersonString
+                return person
+            })
             .value()
-    },
-    parseCsvPersonString: function(csvPersonString, room) {
-        if (!csvPersonString) {
-            throw {statusCode: 400, code: 4, message: 'Invalid person string \'' + csvPersonString + '\''}
-        }
-        const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
-        if (!result) {
-            throw {statusCode: 400, code: 4, message: 'Invalid person string \'' + csvPersonString + '\''}
-        }
-        return new Person({
-            title: result[2],
-            firstName: result[4],
-            nameAddition: result[6],
-            lastName: result[8],
-            ldap: result[10],
-            room
-        })
     }
 }
 

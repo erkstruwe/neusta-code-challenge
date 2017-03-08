@@ -69,6 +69,7 @@ module.exports = {
                 return person
             })
             // error handling
+            // all errors that have been thrown along the way show up here
             .stopOnError((e) => {
                 logger.warn(e)
                 return res.error(e.statusCode, e.code, e.message)
