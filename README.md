@@ -131,7 +131,7 @@ Currently, the line coverage status is as follows:
 |    Folder   | Line coverage |
 |:-----------:|:-------------:|
 | classes     |       100.0 % |
-| controllers |        95.7 % |
+| controllers |       100.0 % |
 | responses   |       100.0 % |
 
 ### Unit

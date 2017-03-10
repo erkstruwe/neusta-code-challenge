@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "test:unit": "istanbul cover --include-all-sources --captureExceptions --dir ./coverage/unit --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
     "test:e2e": "echo \"TODO: Handle sigterm correctly, exclude spec files\" && concurrently --prefix name --names api,e2e --kill-others --success first \"istanbul cover --include-all-sources --captureExceptions --handle-sigint --dir ./coverage/e2e --root src -i 'controllers/**/*.js' -x '**/*.spec.js' src/index.js \" \"wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json\"",
-    "test:e2e:istanbul": "istanbul cover --include-all-sources --captureExceptions --handle-sigint --dir ./coverage/e2e --root src -i \"controllers/**/*.js\" -x \"**/*.spec.js\" src/index.js",
+    "test:e2e:istanbul": "istanbul cover --include-all-sources --captureExceptions --handle-sigint --dir ./coverage/e2e --root src -i \"controllers/**/*.js\" -x \"**/*.spec.js\" src/test.js",
     "test:e2e:jasmine": "echo \"'npm run test:e2e:istanbul' to start manual e2e testing\" && wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
     "test:combine": "istanbul-combine -d coverage/combined coverage/e2e/coverage.json coverage/unit/coverage.json",
     "test": "npm run lint && npm run test:e2e && npm run test:unit",
