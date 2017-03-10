@@ -33,43 +33,48 @@ const schema = new mongoose.Schema(
     }
 )
 
-schema.virtual('fullName').get(function () {
-    return lodash.chain([this.title, this.firstName, this.nameAddition, this.lastName])
-        .compact()
-        .join(' ')
-        .value()
-})
-schema.virtual('csvPersonString').set(function (csvPersonString) {
-    const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
-    if (result) {
-        this.title = result[2]
-        this.firstName = result[4]
-        this.nameAddition = result[6]
-        this.lastName = result[8]
-        this.ldap = result[10]
-    }
-})
+schema.virtual('fullName')
+    .get(function () {
+            return lodash.chain([this.title, this.firstName, this.nameAddition, this.lastName])
+                .compact()
+                .join(' ')
+                .value()
+        }
+    )
+
+schema.virtual('csvPersonString')
+    .set(function (csvPersonString) {
+            const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
+            if (result) {
+                this.title = result[2]
+                this.firstName = result[4]
+                this.nameAddition = result[6]
+                this.lastName = result[8]
+                this.ldap = result[10]
+            }
+        }
+    )
 
 schema.methods = {
-    forOutput: function() {
+    forOutput: function () {
         return {
-            'first name': this.firstName,
-            'last name': this.lastName,
-            'title': this.title,
-            'name addition': this.nameAddition,
-            'ldapuser': this.ldap
+            'first name': lodash.get(this, 'firstName', ''),
+            'last name': lodash.get(this, 'lastName', ''),
+            'title': lodash.get(this, 'title', ''),
+            'name addition': lodash.get(this, 'nameAddition', ''),
+            'ldapuser': lodash.get(this, 'ldap', '')
         }
     }
 }
 
 schema.statics = {
-    parseCsvThroughStream: function() {
+    parseCsvThroughStream: function () {
         return highland.pipeline((csvLineArraysStream) => {
             return csvLineArraysStream
                 .flatMap(Person.parseCsvLineArray)
         })
     },
-    parseCsvLineArray: function(csvLineArray) {
+    parseCsvLineArray: function (csvLineArray) {
         const room = csvLineArray[0]
         return lodash.chain(csvLineArray)
             .drop(1)

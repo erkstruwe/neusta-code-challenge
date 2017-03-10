@@ -59,6 +59,8 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
             </li>
         </ul>
     </dd>
+    <dt>Scalability</dt>
+    <dd>Vertical scalability is done by starting several web workers per machine, e. g. one per CPU core. See `src/config.js` for details. Horizontal scalability is simply done by running an arbitrary number of machines behind a load balancer. Both options are currently disabled because no real database may be used in the challenge.</dd>
 </dl>
 
 ## Extras

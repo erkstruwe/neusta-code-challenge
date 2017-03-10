@@ -26,7 +26,7 @@ module.exports = {
     findOne: (req, res) => {
         logger.profile('GET /api/room/:id')
 
-        // error handling
+        // error handling: invalid room number requested
         if (req.params.id.length !== 4) {
             logger.profile('GET /api/room/:id')
             return res.error(400, 6, 'Room number does not have 4 digits')
@@ -39,10 +39,10 @@ module.exports = {
             .filter({room: req.params.id})
             .value()
 
-        // error handling
+        // error handling: no room found
         if (!persons.length) {
             logger.profile('GET /api/room/:id')
-            return res.error(404, 5, 'Room not found')
+            return res.error(404, 5, 'Room "' + req.params.id + '" not found')
         }
 
         // response
@@ -56,7 +56,7 @@ module.exports = {
     // function to create test data in csv format for arbitrary sizes
     // again, there's no upper size limit here, no matter how small the system's memory is
     // use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10 in your browser to download it
-    // maxPersonsPerRoom = 10 => ~1MB, maxPersonsPerRoom = 10000 => ~1GB, and so on
+    // maxPersonsPerRoom=10 => ~1MB, maxPersonsPerRoom=10000 => ~1GB, and so on
     testData: (req, res) => {
         const maxPersonsPerRoom = req.query.maxPersonsPerRoom || 1000
         let personIndex = 0
@@ -64,7 +64,7 @@ module.exports = {
         return highland(lodash.range(1000, 10000))
             .map((roomNumber) => {
                 const personCount = lodash.random(0, maxPersonsPerRoom)
-                let csvLineArray = [roomNumber]
+                let csvLineArray = [roomNumber.toString()]
                 for (let i = 0; i  < maxPersonsPerRoom; i++) {
                     personIndex++
                     if (i < personCount) {

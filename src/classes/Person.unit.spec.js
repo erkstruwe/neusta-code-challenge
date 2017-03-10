@@ -1,5 +1,4 @@
 const fs = require('fs')
-
 const highland = require('highland')
 const csvParse = require('csv-parse')
 
@@ -36,9 +35,9 @@ describe('Person class', function() {
             expect(this.person.validateSync()).toBeUndefined()
         })
         it('should parse a name with multiple first names to a valid person', function() {
-            this.person.csvPersonString = 'Bruce Anton Berta Wayne (bwayne)'
+            this.person.csvPersonString = 'Bruce Alpha Beta Wayne (bwayne)'
             expect(this.person).toEqual(jasmine.objectContaining({
-                firstName: 'Bruce Anton Berta',
+                firstName: 'Bruce Alpha Beta',
                 lastName: 'Wayne',
                 ldap: 'bwayne'
             }))
@@ -85,10 +84,10 @@ describe('Person class', function() {
             expect(this.person.validateSync()).toBeUndefined()
         })
         it('should parse a name with title and addition and multiple first names to a valid person', function() {
-            this.person.csvPersonString = 'Dr. Bruce Anton Berta von Wayne (bvwayne)'
+            this.person.csvPersonString = 'Dr. Bruce Alpha Beta von Wayne (bvwayne)'
             expect(this.person).toEqual(jasmine.objectContaining({
                 title: 'Dr.',
-                firstName: 'Bruce Anton Berta',
+                firstName: 'Bruce Alpha Beta',
                 nameAddition: 'von',
                 lastName: 'Wayne',
                 ldap: 'bvwayne'
@@ -100,13 +99,23 @@ describe('Person class', function() {
     describe('forOutput method', function() {
         it('should should map attributes to space-separated attributes', function() {
             const person = personData[0]
-            expect(person.forOutput()).toEqual(jasmine.objectContaining({
+            expect(person.forOutput()).toEqual({
                 'first name': 'Bruce',
                 'last name': 'Wayne',
                 'title': 'Dr.',
                 'name addition': 'von',
                 'ldapuser': 'bvwayne'
-            }))
+            })
+        })
+        it('should include attributes that are undefined in the document', function() {
+            const person = personData[1]
+            expect(person.forOutput()).toEqual({
+                'first name': 'Blade',
+                'last name': 'Daywalker',
+                'title': '',
+                'name addition': '',
+                'ldapuser': 'bdaywalker'
+            })
         })
     })
 
@@ -141,6 +150,10 @@ describe('Person class', function() {
             expect(result.length).toBe(2)
             expect(result[0]).toEqual(jasmine.any(Person))
             expect(result[0].firstName).toBe('Bruce')
+            expect(result[0].room).toBe('1000')
+            expect(result[1]).toEqual(jasmine.any(Person))
+            expect(result[1].firstName).toBe('Blade')
+            expect(result[1].room).toBe('1000')
         })
     })
 

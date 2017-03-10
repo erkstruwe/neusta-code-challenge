@@ -10,15 +10,18 @@ const logger = require('../logger')
 
 module.exports = {
     parseCsv: [formDataMiddleware.parse(), formDataMiddleware.stream(), (req, res) => {
-        // leveraging node's stream API here
-        // might look unfamiliar to developers not used to node development, but has huge advantages:
-        // super fast, parallel computing
-        // shared back-pressure: data is processed as fast as the slowest consumer, e. g. incoming HTTP data is throttled if inserting into database was slow to prevent buffers and memory size from growing
-        // starts processing immediately (while the rest of the request is still being received)
-        // very low memory usage, can handle input files of any size, even if they exceed the system's memory
+        // Leveraging node's stream API here
+        // While looking unfamiliar to developers not used to node development, it has huge advantages compared to other approaches:
+        //   Super fast, parallel computing
+        //   Shared back-pressure
+        //     Data is processed as fast as the slowest consumer in the stream's pipeline.
+        //     During a file upload, incoming HTTP data is throttled if a downstream task (e. g. inserting into database) is slow to prevent buffers and memory size from growing.
+        //   As an example, data processing of HTTP requests is started as soon as the first chunks of data arrive at the server (while the rest of the request is still being received).
+        //   After having been processed, chunks of data do not stay in memory. At no time is a large request body fully held in memory.
+        //   With its very low memory usage, it can handle input files of any size, even if they exceed the system's memory.
         logger.profile('POST /api/person')
 
-        // error handling
+        // use upload file stream
         const fileStreams = lodash.chain(req)
             .get('files', {})
             .values()
@@ -34,19 +37,20 @@ module.exports = {
         let uniquePersons = new Set()
 
         return highland(fileStreams[0])
+            // parse csv lines to stream of arrays
             .through(csvParse())
-            // error handling
-            // aborts request as soon as an error occurs, even BEFORE the full request has been received (important for large files)
-            // try with a 1 GB file with duplicate rooms on the first two lines... (use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get a 1 GB file)
-            // validate unique room
+            // error handling: validate unique room
+            // If there is a duplicate room on the first two lines of a 10 GB file, the server responds with an error message immediately, not only after several minutes of uploading and analyzing the file.
+            // Try with a 1 GB file with duplicate rooms on the first two lines... (use http://localhost:3000/api/room/testData?maxPersonsPerRoom=10000 to get a 1 GB file)
             .map((csvLineArray) => {
-                const room = +csvLineArray[0]
+                const room = csvLineArray[0]
                 if (uniqueRooms.has(room)) {
                     throw {statusCode: 400, code: 2, message: 'Duplicate room ' + room}
                 }
                 uniqueRooms.add(room)
                 return csvLineArray
             })
+            // parse to stream of persons
             .through(Person.parseCsvThroughStream())
             // validate person
             .map((person) => {
@@ -60,7 +64,7 @@ module.exports = {
                 }
                 return person
             })
-            // validate unique person
+            // error handling: validate unique person
             .map((person) => {
                 if (uniquePersons.has(person.ldap)) {
                     throw {statusCode: 400, code: 3, message: 'Duplicate person with ldap ' + person.ldap}
@@ -74,11 +78,13 @@ module.exports = {
                 logger.warn(e)
                 return res.error(e.statusCode, e.code, e.message)
             })
-            // write to database in batches to save network round trips
+            // write to database in batches (e. g. 10,000) to save network round trips
             .batch(config.batchSize)
             .each((personsBatch) => {
                 // only write to database if no error occurred
                 if (!res.headersSent) {
+                    // since each person is already a mongoose model, saving to a real mongodb is as easy as
+                    // Person.collection.insert(personsBatch, ...)
                     req.app.locals.persons.push(...personsBatch)
                 }
             })

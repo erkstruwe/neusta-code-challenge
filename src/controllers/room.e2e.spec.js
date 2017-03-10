@@ -32,6 +32,7 @@ describe('room controller', function() {
                     expect(body[0].people[0]['first name']).toBe('Bruce')
                     expect(body[1].room).toBe('1001')
                     expect(body[1].people.length).toBe(1)
+                    expect(body[1].people[0]['first name']).toBe('Mickey')
                     return cb()
                 }
             )
@@ -74,7 +75,7 @@ describe('room controller', function() {
                 }
             )
         })
-        it('should return an error if room id is not 4 digits', function(cb) {
+        it('should return a statusCode of 400 and error 6 as json if room id is not 4 digits', function(cb) {
             return request(
                 {
                     method: 'GET',
@@ -89,7 +90,7 @@ describe('room controller', function() {
                 }
             )
         })
-        it('should return an error if room is not found', function(cb) {
+        it('should return a statusCode of 404 and error 5 if room is not found', function(cb) {
             return request(
                 {
                     method: 'GET',
