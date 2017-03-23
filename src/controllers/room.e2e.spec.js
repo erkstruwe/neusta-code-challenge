@@ -1,3 +1,4 @@
+const fs = require('fs')
 const request = require('request')
 
 const config = require('../config')
@@ -7,9 +8,12 @@ describe('room controller', function() {
         // reset "database" to test data
         return request(
             {
-                method: 'DELETE',
+                method: 'POST',
                 url: config.baseUrl + '/api/person/',
-                json: true
+                json: true,
+                formData: {
+                    persons: fs.createReadStream('data/test.csv')
+                }
             },
             cb
         )
@@ -29,10 +33,22 @@ describe('room controller', function() {
                     expect(body.length).toBe(2)
                     expect(body[0].room).toBe('1000')
                     expect(body[0].people.length).toBe(2)
-                    expect(body[0].people[0]['first name']).toBe('Bruce')
+                    expect(body[0].people[0]).toEqual({
+                        'first name': 'Bruce',
+                        'last name': 'Wayne',
+                        'title': 'Dr.',
+                        'name addition': 'von',
+                        'ldapuser': 'bvwayne'
+                    })
                     expect(body[1].room).toBe('1001')
                     expect(body[1].people.length).toBe(1)
-                    expect(body[1].people[0]['first name']).toBe('Mickey')
+                    expect(body[1].people[0]).toEqual({
+                        'first name': 'Mickey',
+                        'last name': 'Mouse',
+                        'title': '',
+                        'name addition': '',
+                        'ldapuser': 'mmouse'
+                    })
                     return cb()
                 }
             )
@@ -70,7 +86,13 @@ describe('room controller', function() {
                     expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body.room).toBe('1000')
                     expect(body.people.length).toBe(2)
-                    expect(body.people[0]['first name']).toBe('Bruce')
+                    expect(body.people[0]).toEqual({
+                        'first name': 'Bruce',
+                        'last name': 'Wayne',
+                        'title': 'Dr.',
+                        'name addition': 'von',
+                        'ldapuser': 'bvwayne'
+                    })
                     return cb()
                 }
             )
@@ -101,27 +123,6 @@ describe('room controller', function() {
                     expect(r.statusCode).toBe(404)
                     expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body).toEqual({code: 5, message: jasmine.any(String)})
-                    return cb()
-                }
-            )
-        })
-    })
-
-    describe('get /testData', function() {
-        it('should get test data with correct mime type and content disposition', function(cb) {
-            return request(
-                {
-                    method: 'GET',
-                    url: config.baseUrl + '/api/room/testData',
-                    qs: {
-                        maxPersonsPerRoom: 10
-                    }
-                },
-                (e, r, body) => {
-                    expect(r.statusCode).toBe(200)
-                    expect(r.headers['content-type']).toBe('text/csv; charset=utf-8')
-                    expect(r.headers['content-disposition']).toBe('attachment; filename="testData.csv"')
-                    expect(body).toBeDefined()
                     return cb()
                 }
             )

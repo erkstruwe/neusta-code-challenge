@@ -24,7 +24,25 @@ describe('person controller', function() {
                 }
             )
         })
-        it('should return a statusCode of 200 and a null response as json for the test data file', function(cb) {
+        it('should redirect the /api/import endpoint', function(cb) {
+            return request(
+                {
+                    method: 'POST',
+                    url: config.baseUrl + '/api/import',
+                    json: true,
+                    formData: {
+                        persons: fs.createReadStream('data/personsOriginal.csv')
+                    }
+                },
+                (e, r, body) => {
+                    expect(r.statusCode).toBe(307)
+                    expect(r.headers['location']).toBe('/api/person/')
+                    expect(body).toBeUndefined()
+                    return cb()
+                }
+            )
+        })
+        it('should return a statusCode of 200 and a null response as json for the difficult test data file', function(cb) {
             return request(
                 {
                     method: 'POST',
@@ -144,106 +162,6 @@ describe('person controller', function() {
                     expect(r.statusCode).toBe(400)
                     expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
                     expect(body).toEqual({code: 100, message: jasmine.any(String)})
-                    return cb()
-                }
-            )
-        })
-    })
-
-    describe('delete /', function() {
-        it('should return status code 200 and a null response as json', function(cb) {
-            return request(
-                {
-                    method: 'DELETE',
-                    url: config.baseUrl + '/api/person/',
-                    json: true
-                },
-                (e, r, body) => {
-                    expect(r.statusCode).toBe(200)
-                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
-                    expect(body).toBe(null)
-                    return cb()
-                }
-            )
-        })
-    })
-
-    describe('get /', function() {
-        beforeAll(function(cb) {
-            // reset "database" to test data
-            return request(
-                {
-                    method: 'DELETE',
-                    url: config.baseUrl + '/api/person/',
-                    json: true
-                },
-                cb
-            )
-        })
-
-        it('should return a statusCode of 200 and an array of persons as json', function(cb) {
-            return request(
-                {
-                    method: 'GET',
-                    url: config.baseUrl + '/api/person/',
-                    json: true
-                },
-                (e, r, body) => {
-                    expect(r.statusCode).toBe(200)
-                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
-                    expect(body.length).toBe(3)
-                    expect(body[1]).toEqual({
-                        'first name': 'Blade',
-                        'last name': 'Daywalker',
-                        'title': '',
-                        'name addition': '',
-                        'ldapuser': 'bdaywalker'
-                    })
-                    return cb()
-                }
-            )
-        })
-    })
-
-    describe('get /:id', function() {
-        beforeAll(function(cb) {
-            // reset "database" to test data
-            return request(
-                {
-                    method: 'DELETE',
-                    url: config.baseUrl + '/api/person/',
-                    json: true
-                },
-                cb
-            )
-        })
-
-        it('should return a person as json', function(cb) {
-            return request(
-                {
-                    method: 'GET',
-                    url: config.baseUrl + '/api/person/bvwayne',
-                    json: true
-                },
-                (e, r, body) => {
-                    expect(r.statusCode).toBe(200)
-                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
-                    expect(body.ldapuser).toBe('bvwayne')
-                    return cb()
-                }
-            )
-        })
-        it('should return a statusCode of 404 and error 101 if the person does not exist', function(cb) {
-            return request(
-                {
-                    method: 'GET',
-                    url: config.baseUrl + '/api/person/ckent',
-                    json: true
-                },
-                (e, r, body) => {
-                    expect(r.statusCode).toBe(404)
-                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
-                    expect(body).toEqual({code: 101, message: jasmine.any(String)})
                     return cb()
                 }
             )

@@ -11,7 +11,7 @@ const router = express.Router(config.routing)
 router.use('/room/', roomRouter)
 router.use('/person/', personRouter)
 
-// inconsistent endpoint name in challenge, thus redirect to POST /api/person along with form data
-router.route('/import').post((req, res) => res.redirect(307, '/api/person')).all(methodNotAllowedResponse)
+// inconsistent endpoint name in challenge, thus redirect to POST /api/person/ along with form data
+router.route('/import').post((req, res) => res.redirect(307, '/api/person/')).all(methodNotAllowedResponse)
 
 module.exports = router

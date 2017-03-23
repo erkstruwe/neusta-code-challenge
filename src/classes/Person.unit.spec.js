@@ -3,16 +3,31 @@ const highland = require('highland')
 const csvParse = require('csv-parse')
 
 const Person = require('./Person')
-const personData = require('./Person.data')
 
 describe('Person class', function() {
-
-    describe('get fullName virtual', function() {
-        it('should return the full name', function() {
-            expect(personData[0].fullName).toBe('Dr. Bruce von Wayne')
-            expect(personData[1].fullName).toBe('Blade Daywalker')
-            expect(personData[2].fullName).toBe('Mickey Mouse')
-        })
+    beforeEach(function() {
+        this.personData = [
+            new Person({
+                title: 'Dr.',
+                firstName: 'Bruce',
+                nameAddition: 'von',
+                lastName: 'Wayne',
+                ldap: 'bvwayne',
+                room: '1000'
+            }),
+            new Person({
+                firstName: 'Blade',
+                lastName: 'Daywalker',
+                ldap: 'bdaywalker',
+                room: '1000'
+            }),
+            new Person({
+                firstName: 'Mickey',
+                lastName: 'Mouse',
+                ldap: 'mmouse',
+                room: '1001'
+            })
+        ]
     })
 
     describe('set csvPersonString virtual', function() {
@@ -98,8 +113,7 @@ describe('Person class', function() {
 
     describe('forOutput method', function() {
         it('should should map attributes to space-separated attributes', function() {
-            const person = personData[0]
-            expect(person.forOutput()).toEqual({
+            expect(this.personData[0].forOutput()).toEqual({
                 'first name': 'Bruce',
                 'last name': 'Wayne',
                 'title': 'Dr.',
@@ -108,8 +122,7 @@ describe('Person class', function() {
             })
         })
         it('should include attributes that are undefined in the document', function() {
-            const person = personData[1]
-            expect(person.forOutput()).toEqual({
+            expect(this.personData[1].forOutput()).toEqual({
                 'first name': 'Blade',
                 'last name': 'Daywalker',
                 'title': '',
@@ -120,7 +133,7 @@ describe('Person class', function() {
     })
 
     describe('parseCsvThroughStream static', function() {
-        it('should parse the test data', function(cb) {
+        it('should parse the difficult test data', function(cb) {
             const csvLineArraysStream = fs
                 .createReadStream('data/persons.csv', {flags: 'r', encoding: 'utf8'})
                 .pipe(csvParse())
@@ -128,6 +141,13 @@ describe('Person class', function() {
                 .through(Person.parseCsvThroughStream())
                 .toArray((persons) => {
                     expect(persons.length).toBe(33)
+                    expect(persons[0]).toEqual(jasmine.any(Person))
+                    expect(persons[0]).toEqual(jasmine.objectContaining({
+                        firstName: 'Dennis Anton Berta',
+                        lastName: 'Fischer',
+                        ldap: 'dfischer',
+                        room: '1111'
+                    }))
                     return cb()
                 })
         })
@@ -139,6 +159,13 @@ describe('Person class', function() {
                 .through(Person.parseCsvThroughStream())
                 .toArray((persons) => {
                     expect(persons.length).toBe(33)
+                    expect(persons[0]).toEqual(jasmine.any(Person))
+                    expect(persons[0]).toEqual(jasmine.objectContaining({
+                        firstName: 'Dennis',
+                        lastName: 'Fischer',
+                        ldap: 'dfischer',
+                        room: '1111'
+                    }))
                     return cb()
                 })
         })
@@ -149,11 +176,19 @@ describe('Person class', function() {
             const result = Person.parseCsvLineArray(['1000', 'Bruce Wayne (bwayne)', 'Blade Daywalker (bdaywalker)', ''])
             expect(result.length).toBe(2)
             expect(result[0]).toEqual(jasmine.any(Person))
-            expect(result[0].firstName).toBe('Bruce')
-            expect(result[0].room).toBe('1000')
+            expect(result[0]).toEqual(jasmine.objectContaining({
+                firstName: 'Bruce',
+                lastName: 'Wayne',
+                ldap: 'bwayne',
+                room: '1000'
+            }))
             expect(result[1]).toEqual(jasmine.any(Person))
-            expect(result[1].firstName).toBe('Blade')
-            expect(result[1].room).toBe('1000')
+            expect(result[1]).toEqual(jasmine.objectContaining({
+                firstName: 'Blade',
+                lastName: 'Daywalker',
+                ldap: 'bdaywalker',
+                room: '1000'
+            }))
         })
     })
 

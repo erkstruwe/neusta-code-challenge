@@ -1,5 +1,33 @@
 # neusta-code-challenge
 
+## Changelog
+### v0.1.1 (after review)
+* "Parsing should not be implemented in entity (src/classes/Person.js) -> SoC"
+  * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)).
+  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Well, that's rather a matter of taste or the "flavor" of SoC one implements. Some prefer the service-oriented approach by implementing a `Parser` class to separate "parsing" from "the model". I usually choose to be closer to the MVC pattern by separating "things related to model A" from "things related to model B". This doesn't get quite clear in this project because there is only one model.
+* "Content needed to understand tests should be inside the test class/module"
+  * That's right. I moved the data from Person.data.js to Person.unit.spec.js.
+* "Test does not cover all cases, e. g. empty title attribute if no title is given"
+  * In the internal data model, an empty title is indeed stored as null/undefined. However, the forOutput method already took care of returning the format specified in the challenge's rules (Person.unit.spec.js:124). I also added this check to the end to end tests.
+* "Unnecessary test cases, e. g. data import has 33 data sets"
+  * This test checks if the original test file is imported without errors. The file has 33 data sets. I think it is perfectly fine and also necessary to check if all persons are imported.
+* "YAGNI principle is not applied"
+  * So true.
+  * Dropped many challenge-related inline comments
+  * Dropped virtual getter for full name
+  * Dropped `DELETE /api/person/`
+  * Dropped `GET /api/person/`
+  * Dropped `GET /api/person/:ldap`
+  * Dropped test data generator at `GET /api/room/testData`
+  * Dropped vertical scaling support
+  * Dropped batched saving to database
+* "Why is there a test file (`data/persons.csv`) and an original test file (`data/personsOriginal.csv`)?"
+  * The former includes some more difficult names to parse. The latter is the file supplied in the challenge's rules.
+* "Why is there an `api/person/` endpoint?"
+  * The challenge rules required an `api/import` endpoint. That is a poor choice for a REST API because the endpoint's name does not contain information about *which resource should be imported* (in this case it's `person`). In addition, when the application grows, there might very well be other kinds of imports which would then provoke name conflicts. To resolve this issue and to stay compliant with the challenge's rules, I implemented a 307 redirect from `POST api/import` to `POST api/person`.
+* "There are SQLite packages for Node.js"
+  * Of course there are. However, since SQLite lacks many useful features and is not really needed to satisfy the challenge's rules, I decided to keep the "database" in memory.
+
 ## Installation
 Prerequisites
 * node ^6.10.0
@@ -59,31 +87,9 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
             </li>
         </ul>
     </dd>
-    <dt>Scalability</dt>
-    <dd>Vertical scalability is done by starting several web workers per machine, e. g. one per CPU core. See `src/config.js` for details. Horizontal scalability is simply done by running an arbitrary number of machines behind a load balancer. Both options are currently disabled because no real database may be used in the challenge.</dd>
 </dl>
 
-## Extras
-### Person endpoints
-Endpoints for persons have been added to make the REST API "more complete".
-
-Use GET [http://localhost:3000/api/person](http://localhost:3000/api/person) to get a list of all persons.
-
-Use GET http://localhost:3000/api/person/:ldap (e. g. GET [http://localhost:3000/api/person/bwayne](http://localhost:3000/api/bwayne)) to find a person by his or her ldap name.
-
-### Test data generator
-Get test data of arbitrary size at [http://localhost:3000/api/room/testData](http://localhost:3000/api/room/testData). The endpoint returns data for 10,000 rooms. With the `maxPersonsPerRoom` parameter, you can control the file's size. The default is `1000`.
-
-A value of `100` results in a file with ~900,000 persons and ~10 MB size.
-
-A value of `1000` results in a file with ~9,000,000 persons and ~100 MB size.
-
-A value of `10000` results in a file with ~90,000,000 persons and ~1 GB size.
-
-And so on...
-
-**Use these to test the API's performance.**
-
+## Performance
 This application is able to parse and save <b>~64,000 persons per second</b> over HTTP on a standard office notebook.
 
 ## Project structure

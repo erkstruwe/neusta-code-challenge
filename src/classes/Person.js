@@ -33,15 +33,6 @@ const schema = new mongoose.Schema(
     }
 )
 
-schema.virtual('fullName')
-    .get(function () {
-            return lodash.chain([this.title, this.firstName, this.nameAddition, this.lastName])
-                .compact()
-                .join(' ')
-                .value()
-        }
-    )
-
 schema.virtual('csvPersonString')
     .set(function (csvPersonString) {
             const result = csvPersonString.match(/((Dr\.) )?((.+?) )((van|von|de) )?(([^ ]+) )(\((.+)\))/)
