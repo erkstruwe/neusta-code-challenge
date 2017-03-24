@@ -22,4 +22,18 @@ describe('errorResponse middleware', function() {
         const r = this.res.send.calls.mostRecent().args[0]
         expect(r).toEqual({code: 1, message: 'error code 1'})
     })
+    it('should handle unexpected errors', function() {
+        middleware(this.req, this.res, this.next)
+        this.res.error(undefined, undefined, undefined)
+        expect(this.res.status).toHaveBeenCalledWith(400)
+        const r = this.res.send.calls.mostRecent().args[0]
+        expect(r).toEqual({code: 101, message: 'error code 101'})
+    })
+    it('should handle errors without statusCode and code', function() {
+        middleware(this.req, this.res, this.next)
+        this.res.error(undefined, undefined, 'Custom error message')
+        expect(this.res.status).toHaveBeenCalledWith(400)
+        const r = this.res.send.calls.mostRecent().args[0]
+        expect(r).toEqual({code: 101, message: 'Custom error message'})
+    })
 })

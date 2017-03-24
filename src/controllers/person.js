@@ -61,7 +61,7 @@ module.exports = {
             // error handling
             // all errors that have been thrown along the way show up here
             .stopOnError((e) => {
-                logger.warn(e)
+                logger.warn(lodash.pick(e, ['statusCode', 'code', 'message']))
                 return res.error(e.statusCode, e.code, e.message)
             })
             .toArray((personArray) => {

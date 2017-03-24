@@ -10,7 +10,6 @@ const personThroughStream = () => {
     })
 }
 
-
 const personLineArray = (csvLineArray) => {
     const room = csvLineArray[0]
     return lodash.chain(csvLineArray)

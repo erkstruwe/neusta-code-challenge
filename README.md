@@ -3,12 +3,12 @@
 ## Changelog
 ### v0.1.1 (after review)
 * "Parsing should not be implemented in entity (src/classes/Person.js) -> SoC"
-  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Moved that into a the `csvParser` service.
+  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Moved those into the `csvParser` service.
   * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)). Left that here.
 * "Content needed to understand tests should be inside the test class/module"
   * That's right. I moved the data from Person.data.js to Person.unit.spec.js.
 * "Test does not cover all cases, e. g. empty title attribute if no title is given"
-  * In the internal data model, an empty title is indeed stored as null/undefined. However, the forOutput method already took care of returning the format specified in the challenge's rules (Person.unit.spec.js:124). I also added this check to the end to end tests.
+  * In the internal data model, an empty title is indeed stored as null/undefined. However, the forOutput method already took care of returning the format specified in the challenge's rules (Person.unit.spec.js:120). I also added this check to the end to end tests.
 * "Unnecessary test cases, e. g. data import has 33 data sets"
   * This test checks if the original test file is imported without errors. The file has 33 data sets. I think it is perfectly fine and also necessary to check if all persons are imported.
 * "YAGNI principle is not applied"
@@ -30,7 +30,7 @@
 
 ## Installation
 Prerequisites
-* node ^6.10.0
+* node ^6.10.1
 * npm ^3.10.10
 ```
 npm install
@@ -113,6 +113,8 @@ The project structure is heavily inspired by popular REST/MVC frameworks like Sa
             <dd>Response helper functions (e. g. static error messages)</dd>
             <dt>routers</dt>
             <dd>Hierarchical routing tree representing the URL paths</dd>
+            <dt>services</dt>
+            <dd>Helper modules for logging and parsing</dd>
             <dt>config.js</dt>
             <dd>Global configuration file</dd>
             <dt>index.js</dt>
@@ -130,13 +132,14 @@ npm run lint
 
 ## Testing
 ### Coverage
-`classes` and `responses` are covered by unit tests in `*.unit.spec.js` files. `controllers` are covered by end to end tests in `*.e2e.spec.js` files.
+`classes`, `services`, and `responses` are covered by unit tests in `*.unit.spec.js` files. `controllers` are covered by end to end tests in `*.e2e.spec.js` files.
 
 Currently, the line coverage status is as follows:
 
 |    Folder   | Line coverage |
 |:-----------:|:-------------:|
 | classes     |       100.0 % |
+| services    |       100.0 % |
 | controllers |       100.0 % |
 | responses   |       100.0 % |
 
@@ -147,6 +150,8 @@ npm run test:unit
 
 ### End to end
 During end to end testing, real HTTP requests are fired against the real REST API server.
+
+Don't forget to disable proxy servers for localhost!
 
 Start server on terminal 1:
 ```

@@ -15,11 +15,7 @@ describe('room controller', function() {
                     persons: fs.createReadStream('data/test.csv')
                 }
             },
-            (e, r, body) => {
-                console.log(e, r, body)
-                console.log(config.baseUrl + '/api/person/')
-                cb()
-            }
+            cb
         )
     })
 

@@ -132,6 +132,24 @@ describe('person controller', function() {
                 }
             )
         })
+        it('should return a statusCode of 400 and error 101 as json for invalid csv format', function(cb) {
+            return request(
+                {
+                    method: 'POST',
+                    url: config.baseUrl + '/api/person/',
+                    json: true,
+                    formData: {
+                        persons: fs.createReadStream('data/invalidCsv.csv')
+                    }
+                },
+                (e, r, body) => {
+                    expect(r.statusCode).toBe(400)
+                    expect(r.headers['content-type']).toBe('application/json; charset=utf-8')
+                    expect(body).toEqual({code: 101, message: jasmine.any(String)})
+                    return cb()
+                }
+            )
+        })
         it('should return a statusCode of 400 and error 100 for more than one file upload', function(cb) {
             return request(
                 {
