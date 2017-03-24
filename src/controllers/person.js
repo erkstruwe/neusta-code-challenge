@@ -3,12 +3,12 @@ const lodash = require('lodash')
 const highland = require('highland')
 const csvParse = require('csv-parse')
 
-const Person = require('../classes/Person')
-const logger = require('../logger')
+const csvParser = require('../services/csvParser')
+const logger = require('../services/logger')
 
 module.exports = {
     parseCsv: [formDataMiddleware.parse(), formDataMiddleware.stream(), (req, res) => {
-        logger.profile('POST /api/person')
+        logger.profile('POST /api/person/')
 
         const fileStreams = lodash.chain(req)
             .get('files', {})
@@ -37,7 +37,7 @@ module.exports = {
                 return csvLineArray
             })
             // parse to stream of persons
-            .through(Person.parseCsvThroughStream())
+            .through(csvParser.personThroughStream())
             // validate person
             .map((person) => {
                 const validationResult = person.validateSync()
@@ -65,7 +65,7 @@ module.exports = {
                 return res.error(e.statusCode, e.code, e.message)
             })
             .toArray((personArray) => {
-                logger.profile('POST /api/person')
+                logger.profile('POST /api/person/')
 
                 // only write to database if no error occurred
                 if (!res.headersSent) {

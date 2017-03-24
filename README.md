@@ -3,8 +3,8 @@
 ## Changelog
 ### v0.1.1 (after review)
 * "Parsing should not be implemented in entity (src/classes/Person.js) -> SoC"
-  * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)).
-  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Well, that's rather a matter of taste or the "flavor" of SoC one implements. Some prefer the service-oriented approach by implementing a `Parser` class to separate "parsing" from "the model". I usually choose to be closer to the MVC pattern by separating "things related to model A" from "things related to model B". This doesn't get quite clear in this project because there is only one model.
+  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Moved that into a the `csvParser` service.
+  * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)). Left that here.
 * "Content needed to understand tests should be inside the test class/module"
   * That's right. I moved the data from Person.data.js to Person.unit.spec.js.
 * "Test does not cover all cases, e. g. empty title attribute if no title is given"

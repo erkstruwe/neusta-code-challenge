@@ -1,6 +1,6 @@
 const lodash = require('lodash')
 
-const logger = require('../logger')
+const logger = require('../services/logger')
 
 module.exports = {
     find: (req, res) => {

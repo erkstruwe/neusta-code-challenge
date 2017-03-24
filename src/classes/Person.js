@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const lodash = require('lodash')
-const highland = require('highland')
 
 const schema = new mongoose.Schema(
     {
@@ -55,28 +54,6 @@ schema.methods = {
             'name addition': lodash.get(this, 'nameAddition', ''),
             'ldapuser': lodash.get(this, 'ldap', '')
         }
-    }
-}
-
-schema.statics = {
-    parseCsvThroughStream: function () {
-        return highland.pipeline((csvLineArraysStream) => {
-            return csvLineArraysStream
-                .flatMap(Person.parseCsvLineArray)
-        })
-    },
-    parseCsvLineArray: function (csvLineArray) {
-        const room = csvLineArray[0]
-        return lodash.chain(csvLineArray)
-            .drop(1)
-            .compact()
-            .map((csvPersonString) => {
-                let person = new Person
-                person.room = room
-                person.csvPersonString = csvPersonString
-                return person
-            })
-            .value()
     }
 }
 
