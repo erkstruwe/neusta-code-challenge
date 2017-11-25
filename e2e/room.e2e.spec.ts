@@ -1,18 +1,19 @@
-const fs = require('fs')
-const request = require('request')
+import * as fs from 'fs'
 
-const config = require('../config')
+import * as request from 'request'
 
-describe('room controller', function() {
+import {config} from '../src/config'
+
+describe('/api/room routes', function() {
     beforeAll(function(cb) {
         // reset "database" to test data
         return request(
             {
                 method: 'POST',
-                url: config.baseUrl + '/api/person/',
+                url: config.baseUrl + '/api/import',
                 json: true,
                 formData: {
-                    persons: fs.createReadStream('data/test.csv')
+                    persons: fs.createReadStream('e2e/data/test.csv')
                 }
             },
             cb

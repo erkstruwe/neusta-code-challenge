@@ -1,0 +1,38 @@
+{
+    "linterOptions": {
+        "exclude": [
+            "node_modules"
+        ]
+    },
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "semicolon": [
+            true,
+            "never"
+        ],
+        "quotemark": [
+            true,
+            "single",
+            "avoid-escape"
+        ],
+        "member-access": [
+            true,
+            "no-public"
+        ],
+        "object-literal-sort-keys": [
+            false
+        ],
+        "max-line-length": [
+            false
+        ],
+        "comment-format": [
+            false
+        ],
+        "only-arrow-functions": [
+            false
+        ]
+    }
+}

@@ -1,33 +1,27 @@
-const lodash = require('lodash')
+import * as lodash from 'lodash'
 
-const logger = require('../services/logger')
+import {CustomError} from '../classes/CustomError'
 
-module.exports = {
+export const roomController = {
     find: (req, res) => {
-        logger.profile('GET /api/room/')
-
         // data preparation
         const result = lodash.chain(req.app.locals)
             .get('persons', [])
             .groupBy('room')
             .map((persons, room) => ({
                 room,
-                people: persons.map((person) => person.forOutput())
+                people: persons,
             }))
             .value()
 
         // response
-        logger.profile('GET /api/room/')
         return res.send(result)
     },
 
-    findOne: (req, res) => {
-        logger.profile('GET /api/room/:id')
-
+    findOne: (req, res, next) => {
         // error handling: invalid room number requested
         if (req.params.id.length !== 4) {
-            logger.profile('GET /api/room/:id')
-            return res.error(400, 6, 'Room number does not have 4 digits')
+            return next(new CustomError(400, 6, 'Room number does not have 4 digits'))
         }
 
         // data preparation
@@ -38,15 +32,13 @@ module.exports = {
 
         // error handling: no room found
         if (!persons.length) {
-            logger.profile('GET /api/room/:id')
-            return res.error(404, 5, 'Room "' + req.params.id + '" not found')
+            return next(new CustomError(404, 5, 'Room "' + req.params.id + '" not found'))
         }
 
         // response
-        logger.profile('GET /api/room/:id')
         return res.send({
             room: req.params.id,
-            people: persons.map((person) => person.forOutput())
+            people: persons,
         })
-    }
+    },
 }

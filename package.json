@@ -1,55 +1,60 @@
 {
-  "name": "neusta-code-challenge",
-  "version": "0.1.1",
-  "description": "",
-  "main": "src/index.js",
-  "scripts": {
-    "lint": "eslint .",
-    "test:unit": "istanbul cover --include-all-sources --captureExceptions --dir ./coverage/unit --root src -x \"**/*.spec.js\" node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
-    "test:e2e": "echo \"TODO: Handle sigterm correctly, exclude spec files\" && concurrently --prefix name --names api,e2e --kill-others --success first \"istanbul cover --include-all-sources --captureExceptions --handle-sigint --dir ./coverage/e2e --root src -i 'controllers/**/*.js' -x '**/*.spec.js' src/index.js \" \"wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json\"",
-    "test:e2e:istanbul": "istanbul cover --include-all-sources --captureExceptions --handle-sigint --dir ./coverage/e2e --root src -i \"controllers/**/*.js\" -x \"**/*.spec.js\" src/index.js",
-    "test:e2e:jasmine": "echo \"'npm run test:e2e:istanbul' to start manual e2e testing\" && wait-on tcp:3000 && jasmine JASMINE_CONFIG_PATH=jasmine.e2e.json",
-    "test:combine": "istanbul-combine -d coverage/combined coverage/e2e/coverage.json coverage/unit/coverage.json",
-    "test": "npm run lint && npm run test:e2e && npm run test:unit",
-    "start": "node src/index.js",
-    "start:dev": "nodemon --watch src",
-    "preversion": "npm test",
-    "postversion": "git push origin master --follow-tags"
-  },
-  "engines": {
-    "node": "^6.10.1",
-    "npm": "^3.10.10"
-  },
-  "homepage": "",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "author": "",
-  "license": "UNLICENSED",
-  "private": true,
-  "bugs": {
-    "url": ""
-  },
-  "dependencies": {
-    "compression": "^1.6.2",
-    "csv-parse": "^1.2.0",
-    "express": "^4.15.0",
-    "express-form-data": "^2.0.0",
-    "helmet": "^3.5.0",
-    "highland": "^2.10.5",
-    "lodash": "^4.17.4",
-    "mongoose": "^4.9.1",
-    "winston": "^2.3.1"
-  },
-  "devDependencies": {
-    "concurrently": "^3.4.0",
-    "eslint": "^3.18.0",
-    "istanbul": "^0.4.5",
-    "istanbul-combine": "^0.3.0",
-    "jasmine": "^2.5.3",
-    "nodemon": "^1.11.0",
-    "request": "^2.81.0",
-    "wait-on": "^2.0.2"
-  }
+    "name": "neusta-code-challenge",
+    "version": "0.1.2-rc.1",
+    "description": "",
+    "main": "src/index.ts",
+    "scripts": {
+        "lint": "tslint --project .",
+        "lint:fix": "npm run lint -- --fix",
+        "test:unit": "ts-node node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.unit.json",
+        "test:e2e": "wait-on tcp:3000 --timeout 10000 && ts-node node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.e2e.json",
+        "test": "npm run lint && npm run test:unit && npm run test:e2e",
+        "start": "cross-var ts-node $npm_package_main",
+        "start:dev": "nodemon --watch src --ext ts --exec \"npm start\"",
+        "start:test": "nyc --include src/**/*.ts --extension .ts --require ts-node/register ts-node src/index.ts",
+        "preversion": "npm test",
+        "postversion": "git push origin master --follow-tags"
+    },
+    "engines": {
+        "node": "^8.9.1",
+        "npm": "^5.5.1"
+    },
+    "homepage": "",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "author": "",
+    "license": "UNLICENSED",
+    "private": true,
+    "bugs": {
+        "url": ""
+    },
+    "dependencies": {
+        "compression": "^1.7.1",
+        "cross-var": "^1.1.0",
+        "csv-parse": "^2.0.0",
+        "express": "^4.16.2",
+        "express-form-data": "^2.0.1",
+        "helmet": "^3.9.0",
+        "highland": "^2.11.1",
+        "lodash": "^4.17.4",
+        "mongoose": "^4.13.5",
+        "ts-node": "^3.3.0",
+        "typescript": "^2.6.1",
+        "winston": "^2.4.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.0.39",
+        "@types/jasmine": "^2.8.2",
+        "@types/lodash": "^4.14.85",
+        "@types/mongoose": "^4.7.28",
+        "@types/node": "^8.0.53",
+        "concurrently": "^3.5.1",
+        "jasmine": "^2.8.0",
+        "nodemon": "^1.12.1",
+        "request": "^2.83.0",
+        "tslint": "^5.8.0",
+        "wait-on": "^2.0.2"
+    }
 }

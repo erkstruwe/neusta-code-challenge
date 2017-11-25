@@ -1,4 +1,4 @@
-const Person = require('./Person')
+import {Person} from './Person'
 
 describe('Person class', function() {
     beforeEach(function() {
@@ -9,20 +9,20 @@ describe('Person class', function() {
                 nameAddition: 'von',
                 lastName: 'Wayne',
                 ldap: 'bvwayne',
-                room: '1000'
+                room: '1000',
             }),
             new Person({
                 firstName: 'Blade',
                 lastName: 'Daywalker',
                 ldap: 'bdaywalker',
-                room: '1000'
+                room: '1000',
             }),
             new Person({
                 firstName: 'Mickey',
                 lastName: 'Mouse',
                 ldap: 'mmouse',
-                room: '1001'
-            })
+                room: '1001',
+            }),
         ]
     })
 
@@ -41,7 +41,7 @@ describe('Person class', function() {
             expect(this.person).toEqual(jasmine.objectContaining({
                 firstName: 'Bruce',
                 lastName: 'Wayne',
-                ldap: 'bwayne'
+                ldap: 'bwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -50,7 +50,7 @@ describe('Person class', function() {
             expect(this.person).toEqual(jasmine.objectContaining({
                 firstName: 'Bruce Alpha Beta',
                 lastName: 'Wayne',
-                ldap: 'bwayne'
+                ldap: 'bwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -59,7 +59,7 @@ describe('Person class', function() {
             expect(this.person).toEqual(jasmine.objectContaining({
                 firstName: 'Brüß',
                 lastName: 'Wäyne©®™',
-                ldap: 'bwaeyne'
+                ldap: 'bwaeyne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -69,7 +69,7 @@ describe('Person class', function() {
                 title: 'Dr.',
                 firstName: 'Bruce',
                 lastName: 'Wayne',
-                ldap: 'bwayne'
+                ldap: 'bwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -79,7 +79,7 @@ describe('Person class', function() {
                 firstName: 'Bruce',
                 nameAddition: 'von',
                 lastName: 'Wayne',
-                ldap: 'bvwayne'
+                ldap: 'bvwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -90,7 +90,7 @@ describe('Person class', function() {
                 firstName: 'Bruce',
                 nameAddition: 'von',
                 lastName: 'Wayne',
-                ldap: 'bvwayne'
+                ldap: 'bvwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
@@ -101,29 +101,29 @@ describe('Person class', function() {
                 firstName: 'Bruce Alpha Beta',
                 nameAddition: 'von',
                 lastName: 'Wayne',
-                ldap: 'bvwayne'
+                ldap: 'bvwayne',
             }))
             expect(this.person.validateSync()).toBeUndefined()
         })
     })
 
-    describe('forOutput method', function() {
+    describe('toJSON method', function() {
         it('should should map attributes to space-separated attributes', function() {
-            expect(this.personData[0].forOutput()).toEqual({
+            expect(this.personData[0].toJSON()).toEqual({
                 'first name': 'Bruce',
                 'last name': 'Wayne',
                 'title': 'Dr.',
                 'name addition': 'von',
-                'ldapuser': 'bvwayne'
+                'ldapuser': 'bvwayne',
             })
         })
         it('should include attributes that are undefined in the document', function() {
-            expect(this.personData[1].forOutput()).toEqual({
+            expect(this.personData[1].toJSON()).toEqual({
                 'first name': 'Blade',
                 'last name': 'Daywalker',
                 'title': '',
                 'name addition': '',
-                'ldapuser': 'bdaywalker'
+                'ldapuser': 'bdaywalker',
             })
         })
     })

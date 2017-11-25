@@ -2,7 +2,7 @@
 
 ## Changelog
 ### v0.1.1 (after review)
-* "Parsing should not be implemented in entity (src/classes/Person.js) -> SoC"
+* "Parsing should not be implemented in entity (src/classes/Person.ts) -> SoC"
   * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Moved those into the `csvParser` service.
   * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)). Left that here.
 * "Content needed to understand tests should be inside the test class/module"
