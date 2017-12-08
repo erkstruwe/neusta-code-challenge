@@ -4,7 +4,7 @@ import * as helmet from 'helmet'
 
 import {config} from './config'
 import {errorMiddleware} from './middlewares/error'
-import {router} from './routers/index'
+import {router} from './router'
 import {logger} from './services/logger'
 
 const app = express()
