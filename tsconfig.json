@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
         "target": "es2015",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "inlineSourceMap": true
     },
     "include": [
         "src/**/*"
