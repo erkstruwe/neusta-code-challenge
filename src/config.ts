@@ -10,6 +10,7 @@ export const config = {
         caseSensitive: true,
         strict: true,
     },
+    autoShutdown: process.argv.slice(2).indexOf('auto-shutdown') > -1,
 }
 
 config.baseUrl = 'http://localhost:' + config.port

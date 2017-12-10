@@ -1,37 +1,9 @@
 # neusta-code-challenge
 
-## Changelog
-### v0.1.1 (after review)
-* "Parsing should not be implemented in entity (src/classes/Person.ts) -> SoC"
-  * Regarding the two static methods `parseCsvThroughStream` and `parseCsvLineArray`: Moved those into the `csvParser` service.
-  * Regarding the virtual setter `csvPersonString`: Parsing is exactly what virtual setters in Mongoose are for ([http://mongoosejs.com/docs/guide.html#virtuals](http://mongoosejs.com/docs/guide.html#virtuals)). Left that here.
-* "Content needed to understand tests should be inside the test class/module"
-  * That's right. I moved the data from Person.data.js to Person.unit.spec.js.
-* "Test does not cover all cases, e. g. empty title attribute if no title is given"
-  * In the internal data model, an empty title is indeed stored as null/undefined. However, the forOutput method already took care of returning the format specified in the challenge's rules (Person.unit.spec.js:120). I also added this check to the end to end tests.
-* "Unnecessary test cases, e. g. data import has 33 data sets"
-  * This test checks if the original test file is imported without errors. The file has 33 data sets. I think it is perfectly fine and also necessary to check if all persons are imported.
-* "YAGNI principle is not applied"
-  * So true.
-  * Dropped many challenge-related inline comments
-  * Dropped virtual getter for full name
-  * Dropped `DELETE /api/person/`
-  * Dropped `GET /api/person/`
-  * Dropped `GET /api/person/:ldap`
-  * Dropped test data generator at `GET /api/room/testData`
-  * Dropped vertical scaling support
-  * Dropped batched saving to database
-* "Why is there a test file (`data/persons.csv`) and an original test file (`data/personsOriginal.csv`)?"
-  * The former includes some more difficult names to parse. The latter is the file supplied in the challenge's rules.
-* "Why is there an `api/person/` endpoint?"
-  * The challenge rules required an `api/import` endpoint. That is a poor choice for a REST API because the endpoint's name does not contain information about *which resource should be imported* (in this case it's `person`). In addition, when the application grows, there might very well be other kinds of imports which would then provoke name conflicts. To resolve this issue and to stay compliant with the challenge's rules, I implemented a 307 redirect from `POST api/import` to `POST api/person`.
-* "There are SQLite packages for Node.js"
-  * Of course there are. However, since SQLite lacks many useful features and is not really needed to satisfy the challenge's rules, I decided to keep the "database" in memory.
-
 ## Installation
-Prerequisites
-* node ^6.10.1
-* npm ^3.10.10
+Prerequisites according to package.json
+* node ^8.9.1
+* npm ^5.5.1
 ```
 npm install
 ```
@@ -48,7 +20,7 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
     <dd>The task is I/O-heavy. Node.js is built for that. Splitting a task into subtasks and running them <b>in parallel</b> is a breeze.</dd>
     <dt>Express</dt>
     <dd>Very little code necessary to get a <b>secure high-performance</b> REST API going.</dd>
-    <dt>Node.js' stream API</dt>
+    <dt>Node.js' stream API and Highland streaming library</dt>
     <dd>
         While looking unfamiliar to developers not used to node development, it has huge advantages compared to other approaches:
         <ul>
@@ -72,7 +44,7 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
                 Instead of a database, a local variable is used as storage in order to comply with the challenge's rules. This should not be done in production and renders some of the stream API's advantages useless (like e. g. unlimited file size or streaming from and to the database).
             </li>
             <li>
-                The data-modelling library Mongoose is used to define the Person schema. Thus, the appllication takes advantage of its structured way of definig a schema, built-in validation support, good testability, and the possibility to <b>switch to a Mongo DB as the persistance layer with just a few lines</b>.
+                The data-modelling library Mongoose is used to define the Person schema. Thus, the application takes advantage of its structured way of defining a schema, built-in validation support, good testability, and the possibility to <b>switch to a Mongo DB as the persistence layer with just a few lines</b>.
             </li>
             <li>
                 The internal data model is based on the `Person` schema only. There is nothing like a `Room` schema, since rooms do not have any attributes yet.
@@ -80,7 +52,6 @@ The server will be available at [http://localhost:3000/](http://localhost:3000/)
             <li>
                 To keep a consistent naming scheme, some things have been renamed (redirects are in place where applicable):
                 <ul>
-                    <li>POST /api/import is also availbale at POST /api/person</li>
                     <li>`people` are called `person` or `persons` respectively throughout the application.</li>
                     <li>A person's attributes are converted from space-separated to camelCase internally to stay consistent with JavaScript conventions and best practices.</li>
                 </ul>
@@ -97,9 +68,11 @@ The project structure is heavily inspired by popular REST/MVC frameworks like Sa
 
 <dl>
     <dt>coverage</dt>
-    <dd>Coverage reports for unit and end to end as well as the combined result in JSON and HTML</dd>
-    <dt>data</dt>
-    <dd>CSV files used for testing</dd>
+    <dd>Coverage reports for combined unit and end to end tests in HTML format</dd>
+    <dt>e2e</dt>
+    <dd>Test specifications for end-to-end tests</dd>
+    <dt>e2e/data</dt>
+    <dd>Original and additional test data for end-to-end tests</dd>
     <dt>src</dt>
     <dd>
         <dl>
@@ -108,19 +81,17 @@ The project structure is heavily inspired by popular REST/MVC frameworks like Sa
             <dt>controllers</dt>
             <dd>REST API controller functions (the ones that actually respond to the request). <b>These <em>are</em> the functions you're looking for...</b></dd>
             <dt>middlewares</dt>
-            <dd>Functions altering the request or response object before routing takes place</dd>
+            <dd>Global error handling middleware</dd>
             <dt>responses</dt>
             <dd>Response helper functions (e. g. static error messages)</dd>
-            <dt>routers</dt>
-            <dd>Hierarchical routing tree representing the URL paths</dd>
             <dt>services</dt>
             <dd>Helper modules for logging and parsing</dd>
-            <dt>config.js</dt>
+            <dt>config.ts</dt>
             <dd>Global configuration file</dd>
-            <dt>index.js</dt>
+            <dt>index.ts</dt>
             <dd>Main server entry point used by `npm start`. Spawns 1 web worker in this version. Will spawn 1 web worker per CPU core as soon as a real database may be used.</dd>
-            <dt>server.js</dt>
-            <dd>The web worker as an Express application.</dd>
+            <dt>router.ts</dt>
+            <dd>Hierarchical routing tree representing the URL paths</dd>
         </dl>
     </dd>
 </dl>
@@ -132,7 +103,7 @@ npm run lint
 
 ## Testing
 ### Coverage
-`classes`, `services`, and `responses` are covered by unit tests in `*.unit.spec.js` files. `controllers` are covered by end to end tests in `*.e2e.spec.js` files.
+`classes` are covered by unit tests in `*.unit.spec.ts` files. `controllers` are covered by end to end tests in `*.e2e.spec.ts` files.
 
 Currently, the line coverage status is as follows:
 
@@ -153,20 +124,11 @@ During end to end testing, real HTTP requests are fired against the real REST AP
 
 Don't forget to disable proxy servers for localhost!
 
-Start server on terminal 1:
 ```
-npm run test:e2e:istanbul
+npm run test:e2e
 ```
-Start tests on terminal 2:
-```
-npm run test:e2e:jasmine
-```
-Stop server with <kbd>Ctrl</kbd> + <kbd>C</kbd> on terminal 1 after tests have finished to have the coverage report written.
 
 ### Coverage reports
-Located in the `coverage` folder. Separated into `unit`, `e2e`, and `combined` subfolders. To update `combined`, run
-```
-npm run test:combine
-```
+Located in the `coverage` folder.
 
 ##### Thanks for trying!

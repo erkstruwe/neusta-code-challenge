@@ -22,3 +22,7 @@ app.use(errorMiddleware)
 app.locals.persons = []
 
 app.listen(config.port, () => logger.info('listening on port ' + config.port))
+
+if (config.autoShutdown) {
+    setTimeout(process.exit, 10000)
+}
