@@ -102,6 +102,11 @@ npm run lint
 ```
 
 ## Testing
+### Run all tests
+```
+npm test
+```
+
 ### Coverage
 `classes` are covered by unit tests in `*.unit.spec.ts` files. `controllers` are covered by end to end tests in `*.e2e.spec.ts` files.
 
