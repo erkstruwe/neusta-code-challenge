@@ -2,7 +2,7 @@
 
 ## Installation
 Prerequisites according to package.json
-* node ^8.9.1
+* node ^8.9.3
 * npm ^5.5.1
 ```
 npm install
