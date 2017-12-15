@@ -3,7 +3,7 @@
         "target": "es2015",
         "module": "CommonJS",
         "moduleResolution": "Node",
-        "inlineSourceMap": true
+        "sourceMap": true
     },
     "include": [
         "src/**/*"
